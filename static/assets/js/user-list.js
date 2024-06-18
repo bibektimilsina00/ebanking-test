@@ -42,7 +42,7 @@
     }
 
     function suspendUser(userId) {
-        const suspendUserUrl = '/suspend-user/'; // Static URL
+        const suspendUserUrl = '/users/suspend-user/'; // Static URL
         showModal(
             suspendUserUrl, 
             {
@@ -53,7 +53,7 @@
     }
 
     function activateUser(userId) {
-        const activateUserUrl = '/activate-user/'; // Static URL
+        const activateUserUrl = '/users/activate-user/'; // Static URL
         showModal(
             activateUserUrl, 
             {
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const searchText = this.value;
 
             // Fetch member data from the server
-            fetch('/member-search/', {
+            fetch('/accounts/member-search/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -135,8 +135,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+
     function fetchMemberLedger(member) {
-        fetch('/member-ledger/', {
+        fetch('/accounts/member-ledger/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -150,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.isSuccess) {
                 const ledgerData = JSON.parse(data.result);
+                fillFormWithMemberData(member);
                 displayAccountList(ledgerData);
             } else {
                 console.error('Failed to fetch member ledger:', data);
@@ -159,6 +161,19 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error fetching member ledger:', error);
         });
     }
+
+    function fillFormWithMemberData(member) {
+        document.getElementById('add-user-firstname').value = member.MemberName.split(' ')[0];
+        document.getElementById('add-user-lastname').value = member.MemberName.split(' ').slice(1).join(' ');
+        document.getElementById('add-user-email').value = member.Email || '';
+        document.getElementById('add-user-contact').value = member.Mobile || '';
+    }
+
+
+
+
+
+
 
     function displayAccountList(ledgerData) {
         const accountList = document.getElementById('account-list');
@@ -201,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function fetchAccountDetails() {
-        fetch('/fetch-member-ledger/', {
+        fetch('/accounts/fetch-member-ledger/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

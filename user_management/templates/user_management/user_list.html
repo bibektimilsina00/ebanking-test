@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!-- Content -->
+
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <!-- Menu: Start -->
+        {% include "widgets/sidebar.html" %}
+        <!-- Menu: End -->
+
+        <!-- Layout page: Start -->
+        <div class="layout-page">
+            <!-- Navbar: Start -->
+            {% include "widgets/navbar.html" %}
+            <!-- Navbar: End -->
+
+            <!-- Content wrapper: Start -->
+            <div class="content-wrapper">
+                <!-- Content: Start -->
+
+
+                {% csrf_token %}
+                <div class="container-xxl flex-grow-1 container-p-y">
+                    <div class="row g-4 mb-4">
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <p class="mb-0">Total Users</p>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2">21,459</h4>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="avatar">
+                                            <span class="avatar-initial rounded bg-label-primary">
+                                                <i class="bx bx-user bx-sm"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <p class="mb-0">Members</p>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2">4,567</h4>
+
+                                            </div> 
+                                        </div>
+                                        <div class="avatar">
+                                            <span class="avatar-initial rounded bg-label-danger">
+                                                <i class="bx bx-user-check bx-sm"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <span>Active Staff</span>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2">19,860</h4>
+                                            </div>
+                                        </div>
+                                        <div class="avatar">
+                                            <span class="avatar-initial rounded bg-label-success">
+                                                <i class="bx bx-group bx-sm"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <span>Inactive Users</span>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2">237</h4>
+                                            </div>
+                                        </div>
+                                        <div class="avatar">
+                                            <span class="avatar-initial rounded bg-label-warning">
+                                                <i class="bx bx-user-voice bx-sm"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Users List Table -->
+                    <div class="card">
+                        <div class="card-header border-bottom">
+                            <h5 class="card-title">Search Filter</h5>
+                            <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+                                <div class="col-md-4 user_role">
+                                    <select id="UserRole" class="form-select text-capitalize">
+                                        <option value="">Select Role</option>
+                                        <option value="Member">Member</option>
+                                        <option value="Staff">Staff</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="col-md-4 user_plan">
+                                    <select id="UserPlan" class="form-select text-capitalize">
+                                        <option value="">Select Plan</option>
+                                        <option value="Basic">Basic</option>
+                                        <option value="Company">Company</option>
+                                        <option value="Enterprise">Enterprise</option>
+                                        <option value="Team">Team</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 user_status">
+                                    <select id="FilterTransaction" class="form-select text-capitalize">
+                                        <option value="">Select Status</option>
+                                        <option value="Active" class="text-capitalize">
+                                            Active
+                                        </option>
+                                        <option value="Inactive" class="text-capitalize">
+                                            Inactive
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-datatable table-responsive">
+                            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                                <div class="row mx-2">
+                                    <div class="col-md-2">
+                                        <div class="me-3">
+                                            <div class="dataTables_length my-4 " id="DataTables_Table_0_length">
+                                                <label><select name="DataTables_Table_0_length"
+                                                        aria-controls="DataTables_Table_0" class="form-select">
+                                                        <option value="10">10</option>
+                                                        <option value="25">25</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div
+                                            class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column  my-4">
+                                            <div id="DataTables_Table_0_filter" class="dataTables_filter">
+                                                <label><input type="search" class="form-control" placeholder="Search.."
+                                                        aria-controls="DataTables_Table_0" /></label>
+                                            </div>
+                                            <div class="dt-buttons">
+                                                <button
+                                                    class="dt-button buttons-collection dropdown-toggle btn btn-label-secondary mx-3"
+                                                    tabindex="0" aria-controls="DataTables_Table_0" type="button"
+                                                    aria-haspopup="dialog" aria-expanded="false">
+                                                    <span><i class="bx bx-export me-1"></i>Export</span><span
+                                                        class="dt-down-arrow">▼</span>
+                                                </button>
+                                                <button class="dt-button add-new btn btn-primary" tabindex="0"
+                                                    aria-controls="DataTables_Table_0" type="button"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+                                                    <span><i class="bx bx-plus me-0 me-sm-1"></i><span
+                                                            class="d-none d-sm-inline-block">
+                                                            {% if user.role == "organization" %}
+                                                            Add New Member
+                                                            {% else %}
+                                                            Add New User
+                                                            {% endif %}
+                                                        
+                                                        </span></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table class="datatables-users table border-top dataTable no-footer dtr-column "
+                                    id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info"
+                                    style="width: 1131px">
+                                    <thead>
+                                        <tr>
+                                            <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1"
+                                                style="width: 0px; display: none" aria-label=""></th>
+                                            <th class="sorting sorting_desc" tabindex="0"
+                                                aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                style="width: 278px"
+                                                aria-label="User: activate to sort column ascending"
+                                                aria-sort="descending">
+                                                User
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
+                                                rowspan="1" colspan="1" style="width: 135px"
+                                                aria-label="Role: activate to sort column ascending">
+                                                Role
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
+                                                rowspan="1" colspan="1" style="width: 168px"
+                                                aria-label="Billing: activate to sort column ascending">
+                                                Billing
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
+                                                rowspan="1" colspan="1" style="width: 85px"
+                                                aria-label="Status: activate to sort column ascending">
+                                                Status
+                                            </th>
+                                            <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 111px"
+                                                aria-label="Actions">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr class="{% cycle 'odd' 'even' %}">
+                                            <td class="control" tabindex="0" style="display: none"></td>
+                                            <td class="sorting_1">
+                                                <div class="d-flex justify-content-start align-items-center user-name">
+                                                    <div class="avatar-wrapper">
+                                                        <div class="avatar avatar-sm me-3">
+                                                            <img src="{% static "assets/img/avatars/1.png" %}"
+                                                                alt="Avatar" class="rounded-circle" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-column">
+                                                        <a href="app/user/view/account/"
+                                                            class="text-body text-truncate"><span
+                                                                class="fw-medium">{{ user.first_name }} {{ user.last_name }}</span></a><small
+                                                            class="text-muted">{{ user.email }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-truncate d-flex align-items-center">
+                                                    <span class="badge badge-center rounded-pill bg-label-primary w-px-30 h-px-30 me-2">
+                                                        <i class="bx bx-pie-chart-alt bx-xs"></i>
+                                                    </span>
+                                                    {% if user.role == "staff" %}
+                                                    Staff
+                                                    {% elif user.role == "branch" %}
+                                                    Member
+                                                    {% endif %}
+                                                    
+
+                                                </span>
+                                            </td>
+                                            {% comment %} <td><span class="fw-medium">Basic</span></td> {% endcomment %}
+                                            <td>Auto Debit</td>
+                                            <td>
+                                                {% if user.is_active %}
+                                                <span class="badge bg-label-success">Active</span>
+                                                {% else %}
+                                                <span class="badge bg-label-danger">Inactive</span>
+                                                {% endif %}
+                                                
+                                            </td>
+                                            <td>
+                                                <div class="d-inline-block text-nowrap">
+                                                    <button class="btn btn-sm btn-icon">
+                                                        <i class="bx bx-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-icon delete-record">
+                                                        <i class="bx bx-trash"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-icon dropdown-toggle hide-arrow"
+                                                        data-bs-toggle="dropdown">
+                                                        <i class="bx bx-dots-vertical-rounded me-2"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end m-0">
+                                                        <a href="javascript:;" class="dropdown-item" onclick="resetPassword({{ user.id }})">Reset Password</a>
+                                                        {% if user.is_active %}
+                                                        <a href="javascript:;" class="dropdown-item" onclick="suspendUser({{ user.id }})">Suspend</a>
+                                                        {% else %}
+                                                        <a href="javascript:;" class="dropdown-item" onclick="activateUser({{ user.id }})">Activate</a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="row mx-2 mt-4">
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
+                                            aria-live="polite">
+                                            Showing 1 to 10 of {{users|length}} entries
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="dataTables_paginate paging_simple_numbers"
+                                            id="DataTables_Table_0_paginate">
+                                            <ul class="pagination">
+                                                <li class="paginate_button page-item previous disabled"
+                                                    id="DataTables_Table_0_previous">
+                                                    <a aria-controls="DataTables_Table_0" aria-disabled="true"
+                                                        role="link" data-dt-idx="previous" tabindex="-1"
+                                                        class="page-link">Previous</a>
+                                                </li>
+                                                <li class="paginate_button page-item active">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link"
+                                                        aria-current="page" data-dt-idx="0" tabindex="0"
+                                                        class="page-link">1</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link"
+                                                        data-dt-idx="1" tabindex="0" class="page-link">2</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link"
+                                                        data-dt-idx="2" tabindex="0" class="page-link">3</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link"
+                                                        data-dt-idx="3" tabindex="0" class="page-link">4</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link"
+                                                        data-dt-idx="4" tabindex="0" class="page-link">5</a>
+                                                </li>
+                                                <li class="paginate_button page-item next" id="DataTables_Table_0_next">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link"
+                                                        data-dt-idx="next" tabindex="0" class="page-link">Next</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Offcanvas to add new user -->
+                        {% block add_user_form %}
+                        {% include "accounts/widgets/add_user_form.html" %}
+                        {% endblock add_user_form %}
+                        
+                    </div>
+                </div>
+                <!-- / Content: End -->
+
+                <!-- Footer: Start -->
+                {% block footer %}
+                {% include "widgets/footer.html" %}
+                {% endblock footer %}
+
+                <!-- Footer: End -->
+
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!--/ Content wrapper: End -->
+        </div>
+        <!-- / Layout page: End -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target" style="
+        touch-action: pan-y;
+        user-select: none;
+        -webkit-user-drag: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        "></div>
+</div>
+<!-- Layout wrapper: End -->
+
+
+</div>
+
+{% include "widgets/confirm_model.html" %}
+
+{% endblock content %}
+
+{% block extra_js %}
+
+<script src="{% static "assets/js/user-list.js" %}"></script>
+
+{% endblock extra_js %}
