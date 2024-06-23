@@ -1,18 +1,13 @@
 {% extends "base.html" %}
 
 {% load static %}
-{% block content %}
 
+{% block content %}
 
 <!-- Layout wrapper -->
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
-
-
-
-
         <!-- Menu -->
-
         {% block sidebar %}
         {% include "widgets/sidebar.html" %}
         {% endblock sidebar %}
@@ -36,73 +31,217 @@
 
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <div class="row">
-                        <div class="col-lg-8 mb-4 order-0">
-
-
-
-                        </div>
-                        <div class="col-lg-4 col-md-4 order-1">
-                            <div class="row">
-                                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="  {% static "assets/img/icons/unicons/chart-success.png"%}" alt="chart success" class="rounded" />
-                                                </div>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="cardOpt3"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="cardOpt3">
-                                                        <a class="dropdown-item" href="javascript:void(0);">View
-                                                            More</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                                    </div>
+                        <div class="row g-4 mb-4">
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <p class="mb-0">Total Users</p>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_users|length}}</h4>
                                                 </div>
                                             </div>
-                                            <span class="fw-medium d-block mb-1">Profit</span>
-                                            <h3 class="card-title mb-2">$12,628</h3>
-                                            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                                                +72.80%</small>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-primary">
+                                                    <i class="bx bx-user bx-sm"></i>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="  {% static "assets/img/icons/unicons/wallet-info.png"%}" alt="Credit Card" class="rounded" />
-                                                </div>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="cardOpt6"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="cardOpt6">
-                                                        <a class="dropdown-item" href="javascript:void(0);">View
-                                                            More</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                                    </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <p class="mb-0">Total Active Users</p>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_active_users|length}}</h4>
                                                 </div>
                                             </div>
-                                            <span>Sales</span>
-                                            <h3 class="card-title text-nowrap mb-1">$4,679</h3>
-                                            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                                                +28.42%</small>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-success">
+                                                    <i class="bx bx-user bx-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <p class="mb-0">Total Members</p>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_branches|length}}</h4>
+                                                </div>
+                                            </div>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-warning">
+                                                    <i class="bx bx-group bx-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <p class="mb-0">Total Staff</p>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_staff|length}}</h4>
+                                                </div>
+                                            </div>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-warning">
+                                                    <i class="bx bx-user-check bx-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <span>Active Members</span>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_active_branches|length}}</h4>
+                                                </div>
+                                            </div>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-success">
+                                                    <i class="bx bx-group bx-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <span>Inactive Members</span>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_inactive_branches|length}}</h4>
+                                                </div>
+                                            </div>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-danger">
+                                                    <i class="bx bx-group bx-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <span>Active Staff</span>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_active_staff|length}}</h4>
+                                                </div>
+                                            </div>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-success">
+                                                    <i class="bx bx-user-check bx-sm"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start justify-content-between">
+                                            <div class="content-left">
+                                                <span>Inactive Staff</span>
+                                                <div class="d-flex align-items-end mt-2">
+                                                    <h4 class="mb-0 me-2">{{all_inactive_staff|length}}</h4>
+                                                </div>
+                                            </div>
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-danger">
+                                                    <i class="bx bx-user-check bx-sm"></i>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    
+                        
+                        <div class="col-lg-12 col-md-12 order-1">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-title d-flex ">
+                                                <div class="avatar flex-shrink-0">
+                                                    <img src="{% static "assets/img/icons/unicons/chart-success.png" %}" alt="chart success" class="rounded" />
+                                                </div>
+                                                <span class="fw-medium d-block mb-1 mx-4 mt-2">Total Report Viewed</span>
+                                            </div>
 
+                                            <h3 class="card-title mb-2">{{total_report_count}}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+
+                                            
+                                            <div class="card-title d-flex ">
+                                                <div class="avatar flex-shrink-0">
+                                                    <img src="{% static "assets/img/icons/unicons/wallet-info.png" %}" alt="Credit Card" class="rounded" />
+                                                </div>
+                                                <span class="fw-medium d-block mb-1 mx-4 mt-2" >Today Report Viewed</span>
+                                            </div>
+                                           
+
+
+                                            <h3 class="card-title text-nowrap mb-1">{{today_report_count}}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <h5 class="card-header">User Statistics</h5>
+                                <div class="card-body">
+                                    <canvas id="userStatsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <h5 class="card-header">Reports Generated</h5>
+                                <div class="card-body">
+                                    <canvas id="reportsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- / Content -->
 
@@ -151,16 +290,68 @@
 
 <script src="{% static "assets/js/amount_show.js" %}"></script>
 <script src="{% static "assets/js/password_reset.js" %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-
     {% if not user.password_changed %}
     const passwordChangeModal = new bootstrap.Modal(document.getElementById('passwordChangeModal'), {
         backdrop: 'static',
         keyboard: false
     });
     passwordChangeModal.show();
-{% endif %}
+    {% endif %}
+    
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const userStatsCtx = document.getElementById('userStatsChart').getContext('2d');
+    const reportsCtx = document.getElementById('reportsChart').getContext('2d');
+
+    const userStatsChart = new Chart(userStatsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Users', 'Active Users', 'Inactive Users'],
+            datasets: [{
+                label: 'Users',
+                data: [{{all_users|length}}, {{all_active_users|length}}, {{all_inactive_users|length}}],
+                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
+                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const reportsChart = new Chart(reportsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Reports Generated',
+                data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1,
+                fill: true
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+
 </script>
 
 {% endblock extra_js %}

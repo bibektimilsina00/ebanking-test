@@ -15,6 +15,7 @@
     }
 
     document.getElementById('confirmActionButton').addEventListener('click', function() {
+        showBaseModal(true);
         actionData['csrfmiddlewaretoken'] = getCsrfToken();
         $.ajax({
             type: 'POST',
@@ -22,16 +23,18 @@
             data: actionData,
             success: function(response) {
                 alert(response.message);
+                showBaseModal(false);
                 location.reload();  // Reload the page to reflect changes
             },
             error: function(response) {
+                showModal(false);
                 alert('Error: ' + response.responseText);
             }
         });
     });
 
     function resetPassword(userId) {
-        const resetPasswordUrl = '/reset-password/'; // Static URL
+        const resetPasswordUrl = '/users/reset-password/'; // Static URL
         showModal(
             resetPasswordUrl, 
             {
@@ -78,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const searchText = this.value;
-
+         
             // Fetch member data from the server
             fetch('/accounts/member-search/', {
                 method: 'POST',
@@ -90,12 +93,14 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                
                 if (data.isSuccess) {
                     members = JSON.parse(data.result);  // Parse the JSON string
                     filterSuggestions(searchText);
                 } else {
                     console.error('Failed to fetch members:', data);
                 }
+               
             })
             .catch(error => {
                 console.error('Error fetching members:', error);
@@ -137,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     function fetchMemberLedger(member) {
+        showBaseModal(true);
         fetch('/accounts/member-ledger/', {
             method: 'POST',
             headers: {
@@ -156,9 +162,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.error('Failed to fetch member ledger:', data);
             }
+            showBaseModal(false);
         })
         .catch(error => {
             console.error('Error fetching member ledger:', error);
+            showBaseModal(false);
         });
     }
 
@@ -183,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const accountItem = document.createElement('div');
             accountItem.classList.add('account-item');
             accountItem.innerHTML = `
-                <input type="checkbox" id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
+                <input type="checkbox" checked id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
                 <label for="account-${account.AccountNo}">
                     ${account.GroupName} (${account.AccNum}): ${account.PBal}
                 </label>
@@ -216,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function fetchAccountDetails() {
+        showBaseModal(true);
         fetch('/accounts/fetch-member-ledger/', {
             method: 'POST',
             headers: {
@@ -235,9 +244,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.error('Failed to fetch accounts:', data);
             }
+            showBaseModal(false);
         })
         .catch(error => {
             console.error('Error fetching accounts:', error);
+            showBaseModal(false);
         });
     }
 });

@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static "assets/css/loder.css" %}" />
+<link rel="stylesheet" href="{% static "assets/css/export_button.css" %}" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.css">
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Content -->
+<!-- Layout wrapper: Start -->
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <!-- Menu: Start -->
+        {% include "widgets/sidebar.html" %}
+        <!-- Menu: End -->
+
+        <!-- Layout page: Start -->
+        <div class="layout-page">
+            <!-- Navbar: Start -->
+            {% include "widgets/navbar.html" %}
+            <!-- Navbar: End -->
+            <!-- Content wrapper: Start -->
+            <div class="content-wrapper">
+                <!-- Content: Start -->
+                <div class="container-xxl flex-grow-1 container-p-y">
+                    <div class="card">
+                        <div class="card-header border-bottom">
+                            <h5 class="card-title">Search Filter</h5>
+                            <form id="filterForm" method="POST" action="{% url 'report' %}" data-ajax-url="">
+                                {% csrf_token %}
+                                <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+
+                                    <div class="col-md-2 user_role">
+                                        <select id="UserRole" class="form-select text-capitalize" name="account">
+                                            <option value="">Select Account</option>
+                                            {% for account in accounts %}
+                                            <option value="{{ account.AccNum }}">{{ account.AccNum }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <select id="date_type" class="form-select" name="date_type">
+                                            <option value="AD">AD</option>
+                                            <option value="BS">BS</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 user_plan">
+                                        <input type="date" id="start_date" class="form-control" name="start_date" placeholder="From date">
+                                        <input type="text" id="nepali_start_date" class="form-control d-none" placeholder="From date (BS)">
+                                    </div>
+                                    <div class="col-md-3 user_status">
+                                        <input type="date" id="end_date" class="form-control" name="end_date" placeholder="To date">
+                                        <input type="text" id="nepali_end_date" class="form-control d-none" placeholder="To date (BS)">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-primary" id="apply_filters">Apply</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-datatable table-responsive">
+                            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                                <div class="row mx-2">
+                                    <div class="col-md-2">
+                                        <div class="dataTables_length my-4" id="DataTables_Table_0_length">
+                                            <label class='w-50'>
+                                                <select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select">
+                                                    <option value="10">10</option>
+                                                    <option value="25">25</option>
+                                                    <option value="50">50</option>
+                                                    <option value="100">100</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10 d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div id="DataTables_Table_0_filter" class="dataTables_filter me-3">
+                                                <label><input type="search" class="form-control" placeholder="Search.." aria-controls="DataTables_Table_0"></label>
+                                            </div>
+                                        </div>
+                                        <div class="dt-buttons position-relative">
+                                            <button class="export-btn" id="exportButton" aria-controls="DataTables_Table_0" type="button">
+                                                <span><i class="bx bx-export me-1"></i>Export</span><span class="arrow">▼</span>
+                                            </button>
+                                            <ul class="export-options" id="exportOptions">
+                                                <li><a class="dropdown-item" onclick="exportTable('csv')" ><i class="bx bx-file"></i> CSV</a></li>
+                                                <li><a class="dropdown-item" onclick="exportTable('excel')"><i class="bx bx-spreadsheet"></i> Excel</a></li>
+                                                <li><a class="dropdown-item" onclick="exportTable('pdf')"><i class="bx bxs-file-pdf"></i> PDF</a></li>
+                                                <li><a class="dropdown-item" href=""><i class="bx bx-printer"></i> Print</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table class="datatables-users table border-top dataTable no-footer dtr-column " id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info"  >
+                                    <thead>
+                                        <tr>
+                                            <th>BS Date</th>
+                                            <th>Txn Date</th>
+                                            <th>Particulars</th>
+                                            <th>Cheque Number</th>
+                                            <th>Debit</th>
+                                            <th>Credit</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionTableBody">
+                                        {% for txn in transactions %}
+                                        <tr>
+                                            <td>{{ txn.BSDate }}</td>
+                                            <td>{{ txn.TxnDate }}</td>
+                                            <td>{{ txn.Particulars }}</td>
+                                            <td>{{ txn.ChequeNum }}</td>
+                                            <td>{{ txn.Debit }}</td>
+                                            <td>{{ txn.Credit }}</td>
+                                            <td>{{ txn.Balance }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="row mx-2 mt-4">
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                            Showing 1 to {{ transactions|length }} of {{ transactions|length }} entries
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                            <ul class="pagination">
+                                                <li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous">
+                                                    <a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Previous</a>
+                                                </li>
+                                                <li class="paginate_button page-item active">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" aria-current="page" data-dt-idx="0" tabindex="0" class="page-link">1</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="1" tabindex="0" class="page-link">2</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="2" tabindex="0" class="page-link">3</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="3" tabindex="0" class="page-link">4</a>
+                                                </li>
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="4" tabindex="0" class="page-link">5</a>
+                                                </li>
+                                                <li class="paginate_button page-item next" id="DataTables_Table_0_next">
+                                                    <a href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next" tabindex="0" class="page-link">Next</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- / Content: End -->
+
+                <!-- Footer: Start -->
+                {% block footer %}
+                {% include "widgets/footer.html" %}
+                {% endblock footer %}
+
+                <!-- Footer: End -->
+
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!--/ Content wrapper: End -->
+        </div>
+        <!-- / Layout page: End -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target" style="
+        touch-action: pan-y;
+        user-select: none;
+        -webkit-user-drag: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        "></div>
+</div>
+<!-- Layout wrapper: End -->
+</div>
+
+{% include "widgets/confirm_model.html" %}
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/nepali-date-picker@2.0.2/dist/nepaliDatePicker.min.js"></script>
+<script src="{% static "assets/js/report.js" %}"></script>
+
+<!-- Dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<!-- TableExport library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/TableExport/5.2.0/js/tableexport.min.js"></script>
+
+
+
+
+<script>
+document.getElementById('date_type').addEventListener('change', function() {
+    const dateType = this.value;
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const nepaliStartDateInput = document.getElementById('nepali_start_date');
+    const nepaliEndDateInput = document.getElementById('nepali_end_date');
+
+    if (dateType === 'BS') {
+        startDateInput.classList.add('d-none');
+        endDateInput.classList.add('d-none');
+        nepaliStartDateInput.classList.remove('d-none');
+        nepaliEndDateInput.classList.remove('d-none');
+        $('#nepali_start_date').nepaliDatePicker({
+            ndpEnglishInput: 'start_date',
+            onChange: function() {
+                const startDate = $('#nepali_start_date').val();
+                const maxDate = NepaliFunctions.AddDays(startDate, 100);
+                $('#nepali_end_date').nepaliDatePicker('option', 'minDate', startDate);
+                $('#nepali_end_date').nepaliDatePicker('option', 'maxDate', maxDate);
+            }
+        });
+        $('#nepali_end_date').nepaliDatePicker({
+            ndpEnglishInput: 'end_date',
+            onChange: function() {
+                const endDate = $('#nepali_end_date').val();
+                const minDate = NepaliFunctions.SubtractDays(endDate, 100);
+                $('#nepali_start_date').nepaliDatePicker('option', 'maxDate', endDate);
+                $('#nepali_start_date').nepaliDatePicker('option', 'minDate', minDate);
+            }
+        });
+    } else {
+        startDateInput.classList.remove('d-none');
+        endDateInput.classList.remove('d-none');
+        nepaliStartDateInput.classList.add('d-none');
+        nepaliEndDateInput.classList.add('d-none');
+    }
+});
+
+document.getElementById('start_date').addEventListener('change', function() {
+    const startDate = new Date(this.value);
+    const endDateInput = document.getElementById('end_date');
+    const maxDate = new Date(startDate);
+    maxDate.setDate(maxDate.getDate() + 100);
+    
+    endDateInput.min = this.value;
+    endDateInput.max = maxDate.toISOString().split('T')[0];
+});
+
+document.getElementById('end_date').addEventListener('change', function() {
+    const endDate = new Date(this.value);
+    const startDateInput = document.getElementById('start_date');
+    const minDate = new Date(endDate);
+    minDate.setDate(minDate.getDate() - 100);
+    
+    startDateInput.max = this.value;
+    startDateInput.min = minDate.toISOString().split('T')[0];
+});
+
+$('#nepali_start_date').on('dateChange', function() {
+    const startDate = $('#nepali_start_date').val();
+    const maxDate = NepaliFunctions.AddDays(startDate, 100);
+    $('#nepali_end_date').nepaliDatePicker('option', 'minDate', startDate);
+    $('#nepali_end_date').nepaliDatePicker('option', 'maxDate', maxDate);
+});
+
+$('#nepali_end_date').on('dateChange', function() {
+    const endDate = $('#nepali_end_date').val();
+    const minDate = NepaliFunctions.SubtractDays(endDate, 100);
+    $('#nepali_start_date').nepaliDatePicker('option', 'maxDate', endDate);
+    $('#nepali_start_date').nepaliDatePicker('option', 'minDate', minDate);
+});
+
+document.getElementById('apply_filters').addEventListener('click', function() {
+    const dateType = document.getElementById('date_type').value;
+    let startDate = document.getElementById('start_date').value;
+    let endDate = document.getElementById('end_date').value;
+
+    if (dateType === 'BS') {
+        startDate = $('#nepali_start_date').val();
+        endDate = $('#nepali_end_date').val();
+        startDate = convertBSToAD(startDate);
+        endDate = convertBSToAD(endDate);
+    }
+
+    if (!validateDateRange(startDate, endDate)) {
+        alert('Date range should not exceed 100 days.');
+        return;
+    }
+
+    applyFilter(startDate, endDate);
+});
+
+function validateDateRange(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 100;
+}
+
+var globalTransactions = [];
+
+
+function applyFilter(startDate, endDate) {
+    const ajaxUrl = document.getElementById('filterForm').dataset.ajaxUrl;
+    const account = document.getElementById('UserRole').value;
+    const form = document.getElementById('filterForm');
+    const formData = new FormData(form);
+
+    showBaseModal(true);
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        globalTransactions = data.transactions; 
+        const transactions = data.transactions;
+        const tableBody = document.getElementById('transactionTableBody');
+        tableBody.innerHTML = '';
+        transactions.forEach(txn => {
+            const row = `
+            <tr>
+                <td>${txn.BSDate}</td>
+                <td>${txn.TxnDate}</td>
+                <td>${txn.Particulars}</td>
+                <td>${txn.ChequeNum}</td>
+                <td>${txn.Debit}</td>
+                <td>${txn.Credit}</td>
+                <td>${txn.Balance}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+        showBaseModal(false);
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showBaseModal(false);
+        
+    });
+}
+
+function convertBSToAD(bsDate) {
+    // Implement BS to AD date conversion logic
+    // For simplicity, return the same date in this example
+    return bsDate;
+}
+
+function exportTable(type) {
+    const csrfToken = "{{ csrf_token }}"; // This will not work directly in external JS files.
+
+    console.log(type,globalTransactions)
+    fetch('/report/export/', {
+        method: 'POST',
+        body: JSON.stringify({
+            transactions: globalTransactions,
+            type: type
+        }),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => response.blob()) // Assuming you want to handle a file download.
+    .then(blob => {
+        // Handling file download.
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        // the filename you want
+        a.download = 'report.' + type;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        alert('Your file has been downloaded!'); // or handle other UI changes
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+function printTable() {
+    // Implement print functionality
+}
+</script>
+{% endblock extra_js %}

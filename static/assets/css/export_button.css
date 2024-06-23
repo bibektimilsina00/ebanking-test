@@ -1,0 +1,81 @@
+/* Custom Export Button CSS */
+.export-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    color: #6c757d; /* Grey color */
+}
+
+.export-btn:hover {
+    background-color: #343a40; /* Dark grey background */
+    color: white; /* White text color */
+}
+
+.export-btn span {
+    margin-right: 8px;
+}
+
+.export-btn .arrow {
+    font-size: 12px;
+}
+
+.export-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-top: 4px;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.export-options li {
+    margin: 0;
+}
+
+.export-options li a {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    color: #212529;
+    text-decoration: none;
+}
+
+.export-options li a i {
+    margin-right: 8px;
+}
+
+.export-options li a:hover {
+    background-color: #f1f1f1;
+}
+
+.dt-buttons {
+    position: relative;
+}
+
+.dt-buttons.show .export-options {
+    display: block;
+}
+
+.dataTables_filter input[type="search"] {
+    width: 200px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+.dataTables_length select {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px 12px;
+}

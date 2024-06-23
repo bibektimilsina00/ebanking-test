@@ -1,0 +1,51 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasAddUserLabel">{% if user.role == "organization" %} Add Member {% else %} Add Staff {% endif %}</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body mx-0 flex-grow-0">
+        <form class="add-new-user pt-0 fv-plugins-bootstrap5 fv-plugins-framework" id="addNewUserForm" method="POST" action="{% url 'create_user' %}">
+            {% csrf_token %}
+
+            {% if user.role == "organization" %}
+            <div class="mb-3 fv-plugins-icon-container">
+                <label class="form-label" for="add-user-firstname">Search Member</label>
+                <input type="text" class="form-control" id="search-member" placeholder="Search..." name="Search" aria-label="Search" />
+                <div id="suggestions" class="list-group mt-2" style="display: none;"></div>
+            </div>
+            {% endif %}
+
+
+            <div class="mb-3 fv-plugins-icon-container">
+                <label class="form-label" for="add-user-firstname">First Name</label>
+                <input type="text" class="form-control" id="add-user-firstname" placeholder="John" name="first_name" aria-label="John Doe" />
+            </div>
+            <div class="mb-3 fv-plugins-icon-container">
+                <label class="form-label" for="add-user-lastname">Last Name</label>
+                <input type="text" class="form-control" id="add-user-lastname" placeholder="Doe" name="last_name" aria-label="John Doe" />
+            </div>
+
+            {% if user.role == 'branch' %}
+            
+            <div class="mb-3 fv-plugins-icon-container">
+                <label class="form-label" for="add-username">UserName</label>
+                <input type="text" class="form-control" id="add-username" placeholder="Doe" name="username" aria-label="jhon123" />
+            </div>
+            {% endif %}
+            <div class="mb-3 fv-plugins-icon-container">
+                <label class="form-label" for="add-user-email">Email</label>
+                <input type="email" id="add-user-email" class="form-control" placeholder="john.doe@example.com" aria-label="john.doe@example.com" name="email" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="add-user-contact">Contact</label>
+                <input type="text" id="add-user-contact" class="form-control phone-mask" placeholder="+1 (609) 988-44-11" aria-label="john.doe@example.com" name="contact" />
+            </div>
+            <div id="account-section" class="mb-3">
+                <label class="form-label">Account List</label>
+                <div id="account-list"></div>
+            </div>
+            <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit">Submit</button>
+            <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+        </form>
+    </div>
+</div>

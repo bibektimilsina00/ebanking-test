@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'organizations',
     'branches',
     'staff',
+    'report',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

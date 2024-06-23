@@ -10,7 +10,9 @@ from accounts.models import CustomUser
 from organizations.models import Organization
 from branches.models import Branch
 from staff.models import Staff
-from django.contrib.auth.hashers import make_password
+
+
+from django.db.models import Q
 
 class UserListView(LoginRequiredMixin, TemplateView):
     template_name = 'user_management/user_list.html'
@@ -18,17 +20,31 @@ class UserListView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_user = self.request.user
+        search_query = self.request.GET.get('search', '')
 
         if current_user.role == 'organization':
             branches = Branch.objects.filter(created_by=current_user)
-            created_account_users = CustomUser.objects.filter(branches__in=branches).distinct()
+            created_account_users = CustomUser.objects.filter(branches__in=branches)
         elif current_user.role == 'branch':
             branches = Branch.objects.filter(owner=current_user)
-            created_account_users = CustomUser.objects.filter(staff_profile__branch__in=branches).distinct()
+            created_account_users = CustomUser.objects.filter(staff_profile__branch__in=branches)
+            
+            active_staff = CustomUser.objects.filter(staff_profile__branch__in=branches, is_active=True).distinct()
+            inactive_staff = CustomUser.objects.filter(staff_profile__branch__in=branches, is_active=False).distinct()
+            context['active_staff'] = active_staff
+            context['inactive_staff'] = inactive_staff
         else:
             created_account_users = CustomUser.objects.none()
 
-        context['users'] = created_account_users
+        # Applying search filter
+        if search_query:
+            created_account_users = created_account_users.filter(
+                Q(first_name__icontains=search_query) |
+                Q(last_name__icontains=search_query) |
+                Q(email__icontains=search_query)
+            )
+
+        context['users'] = created_account_users.distinct()
         return context
 
 class ResetPasswordView(LoginRequiredMixin, View):
@@ -79,6 +95,7 @@ class CreateUserView(View):
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         available_accounts = request.POST.getlist('accounts')
+        username = request.POST.get('username')
 
         if request.user.role == 'organization':
             role = 'branch'
@@ -90,14 +107,18 @@ class CreateUserView(View):
 
         new_password = get_random_string(length=8)
 
-        user = CustomUser.objects.create(
+        user = CustomUser(
             first_name=first_name,
             last_name=last_name,
             email=email,
             phone=contact,
             role=role,
-            password=make_password(new_password)
+            username=username,
         )
+        user.set_password(new_password) 
+        user.save()
+        
+        
 
         if request.user.role == 'organization':
             Branch.objects.create(

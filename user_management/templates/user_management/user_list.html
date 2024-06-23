@@ -23,15 +23,16 @@
 
                 {% csrf_token %}
                 <div class="container-xxl flex-grow-1 container-p-y">
+                    {% if user.role != "organization" %}
                     <div class="row g-4 mb-4">
                         <div class="col-sm-6 col-xl-3">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
-                                            <p class="mb-0">Total Users</p>
+                                            <p class="mb-0">Total Staffs</p>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2">21,459</h4>
+                                            <h4 class="mb-0 me-2">{{users|length}}</h4>
                                             </div>
                                             
                                         </div>
@@ -49,14 +50,14 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
-                                            <p class="mb-0">Members</p>
+                                            <p class="mb-0">Active Staff</p>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2">4,567</h4>
+                                                <h4 class="mb-0 me-2">{{active_staff|length}}</h4>
 
                                             </div> 
                                         </div>
                                         <div class="avatar">
-                                            <span class="avatar-initial rounded bg-label-danger">
+                                            <span class="avatar-initial rounded bg-label-success">
                                                 <i class="bx bx-user-check bx-sm"></i>
                                             </span>
                                         </div>
@@ -69,13 +70,13 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
-                                            <span>Active Staff</span>
+                                            <span>Inactive Staff</span>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2">19,860</h4>
+                                                <h4 class="mb-0 me-2">{{inactive_staff|length}}</h4>
                                             </div>
                                         </div>
                                         <div class="avatar">
-                                            <span class="avatar-initial rounded bg-label-success">
+                                            <span class="avatar-initial rounded bg-label-danger">
                                                 <i class="bx bx-group bx-sm"></i>
                                             </span>
                                         </div>
@@ -83,60 +84,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-start justify-content-between">
-                                        <div class="content-left">
-                                            <span>Inactive Users</span>
-                                            <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2">237</h4>
-                                            </div>
-                                        </div>
-                                        <div class="avatar">
-                                            <span class="avatar-initial rounded bg-label-warning">
-                                                <i class="bx bx-user-voice bx-sm"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
+                    {% endif %}
                     <!-- Users List Table -->
                     <div class="card">
-                        <div class="card-header border-bottom">
-                            <h5 class="card-title">Search Filter</h5>
-                            <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
-                                <div class="col-md-4 user_role">
-                                    <select id="UserRole" class="form-select text-capitalize">
-                                        <option value="">Select Role</option>
-                                        <option value="Member">Member</option>
-                                        <option value="Staff">Staff</option>
-                                        
-                                    </select>
-                                </div>
-                                <div class="col-md-4 user_plan">
-                                    <select id="UserPlan" class="form-select text-capitalize">
-                                        <option value="">Select Plan</option>
-                                        <option value="Basic">Basic</option>
-                                        <option value="Company">Company</option>
-                                        <option value="Enterprise">Enterprise</option>
-                                        <option value="Team">Team</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4 user_status">
-                                    <select id="FilterTransaction" class="form-select text-capitalize">
-                                        <option value="">Select Status</option>
-                                        <option value="Active" class="text-capitalize">
-                                            Active
-                                        </option>
-                                        <option value="Inactive" class="text-capitalize">
-                                            Inactive
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="card-header">
+                            <h5 class="card-title">All Members</h5>
                         </div>
                         <div class="card-datatable table-responsive">
                             <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
@@ -155,40 +109,34 @@
                                         </div>
                                     </div>
                                     <div class="col-md-10">
-                                        <div
-                                            class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column  my-4">
-                                            <div id="DataTables_Table_0_filter" class="dataTables_filter">
-                                                <label><input type="search" class="form-control" placeholder="Search.."
-                                                        aria-controls="DataTables_Table_0" /></label>
-                                            </div>
-                                            <div class="dt-buttons">
-                                                <button
-                                                    class="dt-button buttons-collection dropdown-toggle btn btn-label-secondary mx-3"
-                                                    tabindex="0" aria-controls="DataTables_Table_0" type="button"
-                                                    aria-haspopup="dialog" aria-expanded="false">
-                                                    <span><i class="bx bx-export me-1"></i>Export</span><span
-                                                        class="dt-down-arrow">▼</span>
-                                                </button>
-                                                <button class="dt-button add-new btn btn-primary" tabindex="0"
-                                                    aria-controls="DataTables_Table_0" type="button"
-                                                    data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
-                                                    <span><i class="bx bx-plus me-0 me-sm-1"></i><span
-                                                            class="d-none d-sm-inline-block">
+                                        <form method="GET" action="{% url 'user_list' %}">
+                                            <div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-between my-4">
+                                                <div id="DataTables_Table_0_filter" class="dataTables_filter d-flex">
+                                                    <label>
+                                                        <input type="search" name="search" class="form-control" placeholder="Search.." value="{{ request.GET.search }}" aria-controls="DataTables_Table_0" />
+                                                    </label>
+                                                    <button type="submit" class="btn btn-primary ms-2">Search</button> <!-- Search button -->
+                                                </div>
+                                                <div class="dt-buttons">
+                                                    <button class="dt-button add-new btn btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+                                                        <span><i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">
                                                             {% if user.role == "organization" %}
                                                             Add New Member
                                                             {% else %}
                                                             Add New User
                                                             {% endif %}
-                                                        
                                                         </span></span>
-                                                </button>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
+                                        
+                                        
                                     </div>
                                 </div>
                                 <table class="datatables-users table border-top dataTable no-footer dtr-column "
                                     id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info"
-                                    style="width: 1131px">
+                                    >
                                     <thead>
                                         <tr>
                                             <th class="control sorting_disabled dtr-hidden" rowspan="1" colspan="1"
@@ -204,11 +152,6 @@
                                                 rowspan="1" colspan="1" style="width: 135px"
                                                 aria-label="Role: activate to sort column ascending">
                                                 Role
-                                            </th>
-                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
-                                                rowspan="1" colspan="1" style="width: 168px"
-                                                aria-label="Billing: activate to sort column ascending">
-                                                Billing
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
                                                 rowspan="1" colspan="1" style="width: 85px"
@@ -256,7 +199,7 @@
                                                 </span>
                                             </td>
                                             {% comment %} <td><span class="fw-medium">Basic</span></td> {% endcomment %}
-                                            <td>Auto Debit</td>
+                                            
                                             <td>
                                                 {% if user.is_active %}
                                                 <span class="badge bg-label-success">Active</span>
@@ -341,7 +284,7 @@
                         </div>
                         <!-- Offcanvas to add new user -->
                         {% block add_user_form %}
-                        {% include "accounts/widgets/add_user_form.html" %}
+                        {% include "widgets/add_user_form.html" %}
                         {% endblock add_user_form %}
                         
                     </div>
