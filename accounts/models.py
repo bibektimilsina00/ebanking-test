@@ -1,19 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .manager import CustomUserManager
-from .fields import EncryptedEmailField
+from django_cryptography.fields import encrypt
+
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    email =  EncryptedEmailField(unique=True, blank=False, null=False)
-    phone = (models.CharField(max_length=15, blank=True))
-    first_name = (models.CharField(max_length=30, blank=True))
-    last_name = (models.CharField(max_length=30, blank=True))
+    email =  (models.EmailField(unique=True))
+    phone = encrypt(models.CharField(max_length=15, blank=True))
+    first_name = encrypt(models.CharField(max_length=30, blank=True))
+    last_name = encrypt(models.CharField(max_length=30, blank=True))
     address = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     password_changed = models.BooleanField(default=False)
-    username =  models.CharField(max_length=30, blank=True)
+    username =  models.CharField(max_length=30, blank=True,null=True)
 
     ROLE_CHOICES = [
         ('superadmin', 'SuperAdmin'),

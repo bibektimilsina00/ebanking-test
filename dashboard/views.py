@@ -11,6 +11,10 @@ from staff.models import Staff
 from accounts.models import CustomUser
 
 
+
+
+
+
 class OrganizationDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/organization_dashboard.html'
 
@@ -74,6 +78,7 @@ class BranchDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/branch_dashboard.html'
 
     def get_context_data(self, **kwargs):
+        total_balance = 0
         context = super().get_context_data(**kwargs)
 
         try:
@@ -87,10 +92,12 @@ class BranchDashboardView(LoginRequiredMixin, TemplateView):
             return context
 
         context['accounts'] = self.fetch_member_ledger(organization, branch.member_number)
+        total_balance = sum(account['PBal'] for account in context['accounts'] if 'PBal' in account)
         
         # all user created by the current user and whole role is staff
         all_staff = Staff.objects.filter(branch__owner=self.request.user)
         context['all_staff'] = all_staff
+        context['total_balance'] = total_balance
         
         
         
@@ -126,6 +133,7 @@ class StaffDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/staff_dashboard.html'
 
     def get_context_data(self, **kwargs):
+        total_balance=0
         context = super().get_context_data(**kwargs)
         
         try:
@@ -140,6 +148,8 @@ class StaffDashboardView(LoginRequiredMixin, TemplateView):
         all_accounts = self.fetch_member_ledger(organization, branch.member_number)
         filtered_accounts = [acc for acc in all_accounts if acc['AccNum'] in access_accounts]
         context['accounts'] = filtered_accounts
+        total_balance = sum(account['PBal'] for account in filtered_accounts if 'PBal' in account)
+        context['total_balance'] = total_balance
         return context
 
     def fetch_member_ledger(self, organization, member_number):

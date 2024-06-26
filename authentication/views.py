@@ -4,6 +4,24 @@ from django.contrib import messages
 from django.http import JsonResponse
 from accounts.models import CustomUser
 
+
+
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
+def root_redirect(request):
+    if request.user.is_authenticated:
+        
+        if request.user.role == "organization":
+            return redirect('organization_dashboard')
+        elif request.user.role == "branch":
+            return redirect('branch_dashboard')
+        else:
+            return redirect('staff_dashboard')  
+    else:
+        return redirect('login')
+
+
 class CustomLoginView(LoginView):
     template_name = 'authentication/login.html'
 
