@@ -8,8 +8,10 @@ Django==4.2.13
 django-appconf==1.0.6
 django-cryptography==1.1
 et-xmlfile==1.1.0
+gunicorn==22.0.0
 idna==3.7
 openpyxl==3.1.4
+packaging==24.1
 pillow==10.3.0
 psycopg==3.1.19
 psycopg2-binary==2.9.9

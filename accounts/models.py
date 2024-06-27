@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from .manager import CustomUserManager
+from accounts.manager import CustomUserManager
 from django_cryptography.fields import encrypt
 
 
