@@ -86,17 +86,10 @@ WSGI_APPLICATION = 'ebanking.wsgi.application'
 
 
 
-
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gurkhato_ebanking',
-        'USER': 'gurkhato_ebanking',
-        'PASSWORD': '-sNG.VQ^L,WM',
-        'HOST': 'localhost',
-        'PORT': '1433',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
