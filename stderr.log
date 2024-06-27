@@ -1,0 +1,76 @@
+Traceback (most recent call last):
+  File "/home/gurkhato/ebankingDiscof/e-banking-Web/passenger_wsgi.py", line 8, in <module>
+    wsgi = imp.load_source('wsgi', 'ebanking/wsgi.py')
+  File "/opt/alt/python39/lib64/python3.9/imp.py", line 171, in load_source
+    module = _load(spec)
+  File "<frozen importlib._bootstrap>", line 711, in _load
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "ebanking/wsgi.py", line 12, in <module>
+    from django.core.wsgi import get_wsgi_application
+ModuleNotFoundError: No module named 'django'
+Traceback (most recent call last):
+  File "/home/gurkhato/ebankingDiscof/e-banking-Web/passenger_wsgi.py", line 8, in <module>
+    wsgi = imp.load_source('wsgi', 'ebanking/wsgi.py')
+  File "/opt/alt/python39/lib64/python3.9/imp.py", line 171, in load_source
+    module = _load(spec)
+  File "<frozen importlib._bootstrap>", line 711, in _load
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "ebanking/wsgi.py", line 12, in <module>
+    from django.core.wsgi import get_wsgi_application
+ModuleNotFoundError: No module named 'django'
+[UID:2382][3833047] Child process with pid: 3833056 was killed by signal: 15, core dumped: no
+Not Found: /static/admin/css/base.css
+Not Found: /static/admin/css/nav_sidebar.css
+Not Found: /static/admin/css/dark_mode.css
+Not Found: /static/admin/css/dashboard.css
+Not Found: /static/admin/css/responsive.css
+Not Found: /static/admin/js/theme.js
+Not Found: /static/admin/js/nav_sidebar.js
+Not Found: /static/admin/css/nav_sidebar.css
+Not Found: /static/admin/js/nav_sidebar.js
+Not Found: /static/admin/css/dark_mode.css
+Not Found: /static/admin/css/base.css
+Not Found: /static/admin/js/theme.js
+Not Found: /static/admin/css/responsive.css
+Not Found: /static/admin/css/dashboard.css
+Not Found: /favicon.ico
+Not Found: /static/admin/css/changelists.css
+Not Found: /static/admin/js/vendor/jquery/jquery.js
+Not Found: /static/admin/js/admin/RelatedObjectLookups.js
+Not Found: /static/admin/js/vendor/xregexp/xregexp.js
+Not Found: /static/admin/js/core.js
+Not Found: /static/admin/js/prepopulate.js
+Not Found: /static/admin/js/jquery.init.js
+Not Found: /static/admin/js/urlify.js
+Not Found: /static/admin/img/search.svg
+Not Found: /static/admin/js/actions.js
+Not Found: /static/admin/js/filters.js
+Not Found: /static/admin/css/changelists.css
+Not Found: /static/admin/js/jquery.init.js
+Not Found: /static/admin/js/actions.js
+Not Found: /static/admin/js/prepopulate.js
+Not Found: /static/admin/js/urlify.js
+Not Found: /static/admin/js/core.js
+Not Found: /static/admin/js/admin/RelatedObjectLookups.js
+Not Found: /static/admin/js/vendor/jquery/jquery.js
+Not Found: /static/admin/js/vendor/xregexp/xregexp.js
+Not Found: /static/admin/img/icon-yes.svg
+Not Found: /static/admin/js/filters.js
+Not Found: /static/admin/img/icon-no.svg
+Not Found: /static/admin/img/search.svg
+Not Found: /static/admin/js/prepopulate_init.js
+Not Found: /static/admin/css/forms.css
+Not Found: /static/admin/js/change_form.js
+Not Found: /static/admin/js/SelectBox.js
+Not Found: /static/admin/js/SelectFilter2.js
+Not Found: /static/admin/img/icon-addlink.svg
+Not Found: /static/admin/img/icon-changelink.svg
+Not Found: /static/admin/img/icon-viewlink.svg
+Forbidden (CSRF token from POST incorrect.): /login/
+Forbidden (CSRF token from POST incorrect.): /login/
+Forbidden (CSRF token from POST incorrect.): /login/
+Not Found: /favicon.ico
