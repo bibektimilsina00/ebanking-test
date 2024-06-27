@@ -27,7 +27,7 @@ def member_search(request):
 
     api_url = f"{organization.base_url}SearchMemberNameEbank"
     payload = {
-        "clientId": organization.client_id,
+        "clientId": organization.clint_id,
         "SearchText": search_text,
         "username": organization.username
     }
