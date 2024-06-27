@@ -88,6 +88,12 @@ class ActivateUserView(LoginRequiredMixin, View):
         except CustomUser.DoesNotExist:
             return HttpResponseBadRequest('User does not exist')
 
+
+
+
+
+
+
 class CreateUserView(View):
     def post(self, request, *args, **kwargs):
         email = request.POST.get('email')
