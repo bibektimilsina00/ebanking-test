@@ -3,6 +3,11 @@
 {% block content %}
 <!-- Content -->
 
+
+{% block extra_head %}
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+{% endblock extra_head %}
+
 <!-- Layout wrapper: Start -->
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
@@ -358,14 +363,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Add necessary authentication headers here
                 },
                 body: JSON.stringify(postData)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.isSuccess) {
-                    // Parse the inner JSON string from the response
                     const members = JSON.parse(data.result);
                     displaySuggestions(searchText, members);
                 } else {
