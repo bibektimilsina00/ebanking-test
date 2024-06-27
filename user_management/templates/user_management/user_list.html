@@ -342,38 +342,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     let members = [];
-
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const searchText = this.value;
-         
+            const thirdPartyApiUrl = "http://202.51.1.253:88/Api/ebank/SearchMemberNameEbank"; 
+
+            const postData = {
+                clientId: "43",
+                SearchText: searchText,
+                username: "shrawan"
+            };
 
 
-
-
-            
-            // Fetch member data from the server
-            fetch('/accounts/member-search/', {
+            fetch(thirdPartyApiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
+                    // Add necessary authentication headers here
                 },
-                body: JSON.stringify({ SearchText: searchText })
+                body: JSON.stringify(postData)
             })
             .then(response => response.json())
             .then(data => {
-                
                 if (data.isSuccess) {
-                    members = JSON.parse(data.result);  // Parse the JSON string
-                    filterSuggestions(searchText);
+                    // Parse the inner JSON string from the response
+                    const members = JSON.parse(data.result);
+                    displaySuggestions(searchText, members);
                 } else {
                     console.error('Failed to fetch members:', data);
+                    suggestionsBox.innerHTML = 'Failed to fetch members. Please try again.';
                 }
-               
             })
             .catch(error => {
                 console.error('Error fetching members:', error);
+                suggestionsBox.innerHTML = 'Error fetching members. Please check the console for more information.';
             });
         });
     }
