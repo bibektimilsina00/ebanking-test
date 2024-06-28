@@ -99,7 +99,6 @@ class ReportView(View):
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
         except ValueError as e:
-            print(f"Error parsing dates: {e}")
             context.update({'transactions': transactions, 'error': 'Invalid date format'})
             return render(request, self.template_name, context)
 
@@ -120,7 +119,8 @@ class ReportView(View):
             if response_data.get('isSuccess'):
                 transactions = json.loads(response_data['result'])
         except requests.RequestException as e:
-            print(e)
+            context.update({'transactions': transactions, 'error': str(e)})
+            return render(request, self.template_name, context)
 
 
         context.update({'transactions': transactions})
@@ -133,7 +133,6 @@ class ReportView(View):
 def export_report(request):
     try:
         data = json.loads(request.body)  # Load JSON data from request body
-        print(data)
         transactions = data.get('transactions', [])
         report_type = data.get('type', '')
         if report_type == 'csv':

@@ -37,29 +37,25 @@ def member_search(request):
         response.raise_for_status()  # Will raise an HTTPError for bad responses
     except requests.exceptions.HTTPError as e:
         error_msg = f'API responded with a non-successful status code: {e.response.status_code}'
-        print(error_msg, "Response:", e.response.text)
         return JsonResponse({'error': error_msg}, status=e.response.status_code)
     except requests.exceptions.ConnectionError:
         error_msg = 'Failed to connect to the API endpoint.'
-        print(error_msg, f"URL attempted: {api_url}")
         return JsonResponse({'error': error_msg}, status=503)
     except requests.exceptions.RequestException as e:
         error_msg = f'Error during API request: {str(e)}'
-        print(error_msg)
+
         return JsonResponse({'error': error_msg}, status=500)
 
     try:
         response_data = response.json()
     except json.JSONDecodeError:
         error_msg = 'Failed to decode JSON from external API'
-        print(error_msg, "Response content:", response.content)
         return JsonResponse({'error': error_msg}, status=500)
 
     if response_data.get('isSuccess'):
         return JsonResponse(response_data)
     else:
         error_msg = 'API did not return success'
-        print(error_msg, "API response:", response_data)
         return JsonResponse({'error': error_msg}, status=400)
 
 
@@ -91,7 +87,6 @@ def member_ledger(request):
             else:
                 return JsonResponse({'error': 'Failed to fetch data from external API'}, status=response.status_code)
         except requests.RequestException as e:
-            print(e)
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
