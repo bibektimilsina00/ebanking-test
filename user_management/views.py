@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
+from django.forms import ValidationError
 from django.urls import reverse
 from django.views.generic import TemplateView, View
 from django.core.mail import send_mail
@@ -113,7 +115,7 @@ class CreateUserView(View):
 
         new_password = get_random_string(length=8)
 
-        user = CustomUser(
+        new_user = CustomUser(
             first_name=first_name,
             last_name=last_name,
             email=email,
@@ -121,22 +123,42 @@ class CreateUserView(View):
             role=role,
             username=username,
         )
-        user.set_password(new_password) 
-        user.save()
-        
+        new_user.set_password(new_password) 
+        try:
+            new_user.full_clean()
+            new_user.save()
+            # Depending on the role, create related profiles
+            if request.user.role == 'organization':
+                # Your logic for creating a branch or organization-specific profiles
+                pass
+            elif request.user.role == 'branch':
+                # Your logic for creating staff or branch-specific profiles
+                pass
+            # Email the user their new password
+            send_mail(
+                'Your account has been created',
+                f'Your password is: {new_password}',
+                'admin@yourdomain.com',
+                [email],
+                fail_silently=False,
+            )
+        except (ValidationError, IntegrityError) as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
         
 
+
+        
         if request.user.role == 'organization':
             Branch.objects.create(
                 name=f"{first_name} {last_name}'s Branch",
                 organization=Organization.objects.get(owner=request.user),
                 created_by=request.user,
                 available_accounts=','.join(available_accounts),
-                owner=user
+                owner=new_user
             )
         elif request.user.role == 'branch':
             Staff.objects.create(
-                user=user,
+                user=new_user,
                 branch=Branch.objects.get(owner=request.user),
                 access_accounts=','.join(available_accounts)
             )
@@ -145,7 +167,7 @@ class CreateUserView(View):
             'Your account has been created',
             f'Your password is: {new_password}',
             'admin@yourdomain.com',
-            [user.email],
+            [new_user.email],
             fail_silently=False,
         )
         return redirect(reverse('user_list'))

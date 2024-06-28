@@ -81,12 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const searchText = this.value;
-         
-
-
-
-
-            
             // Fetch member data from the server
             fetch('/accounts/member-search/', {
                 method: 'POST',
@@ -181,12 +175,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('add-user-email').value = member.Email || '';
         document.getElementById('add-user-contact').value = member.Mobile || '';
     }
-
-
-
-
-
-
 
     function displayAccountList(ledgerData) {
         const accountList = document.getElementById('account-list');

@@ -15,6 +15,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     password_changed = models.BooleanField(default=False)
     username =  models.CharField(max_length=30, blank=True,null=True)
+    avtar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
     ROLE_CHOICES = [
         ('superadmin', 'SuperAdmin'),

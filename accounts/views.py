@@ -5,7 +5,12 @@ import requests
 import json
 from organizations.models import Organization
 from branches.models import Branch
+from django.http import JsonResponse
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
+
+from django.views.generic import TemplateView
 
 def member_search(request):
     if request.method != 'POST':
@@ -119,3 +124,38 @@ def fetch_member_ledger(request):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+
+
+
+
+class ProfileView(TemplateView):
+    template_name = 'accounts/profile.html'
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.first_name = request.POST.get('firstName', user.first_name)
+        user.last_name = request.POST.get('lastName', user.last_name)
+        user.email = request.POST.get('email', user.email)
+        user.phone = request.POST.get('phoneNumber', user.phone)
+        user.address = request.POST.get('address', user.address)
+
+        avatar_file = request.FILES.get('avatar')
+        if avatar_file:
+            user.avatar = avatar_file
+
+        try:
+            user.full_clean()  # This will check for any field errors according to the model's validation
+            user.save()
+            return JsonResponse({'status': 'success', 'message': 'Profile updated successfully'})
+        except ValidationError as e:
+            errors = {field: error[0] for field, error in e.message_dict.items()}
+            return JsonResponse({'status': 'error', 'message': 'Validation error', 'errors': errors})
+        except IntegrityError as e:
+            return JsonResponse({'status': 'error', 'message': 'Database error, possibly duplicate email'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)

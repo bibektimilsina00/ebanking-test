@@ -95,7 +95,16 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                                    <!-- Placeholder for initial message -->
+                                    <div id="initialMessage" class="alert alert-info text-center" style="display: none;">
+                                        Apply the filter to view the report.
+                                    </div>
+                                    
+                                    
                                 <table class="datatables-users table border-top dataTable no-footer dtr-column " id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info"  >
+                                   
                                     <thead>
                                         <tr>
                                             <th>BS Date</th>
@@ -107,6 +116,10 @@
                                             <th>Balance</th>
                                         </tr>
                                     </thead>
+                                     <!-- Placeholder for no results message -->
+                                     <div id="noResultsMessage" class="alert alert-warning text-center" style="display: none;">
+                                        No report found.
+                                    </div>
                                     <tbody id="transactionTableBody">
                                         {% for txn in transactions %}
                                         <tr>
@@ -316,6 +329,9 @@ function applyFilter(startDate, endDate) {
     const account = document.getElementById('UserRole').value;
     const form = document.getElementById('filterForm');
     const formData = new FormData(form);
+    const initialMessage = document.getElementById('initialMessage');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const tableBody = document.getElementById('transactionTableBody');
 
     showBaseModal(true);
     fetch(form.action, {
@@ -327,37 +343,67 @@ function applyFilter(startDate, endDate) {
     })
     .then(response => response.json())
     .then(data => {
-        globalTransactions = data.transactions; 
         const transactions = data.transactions;
-        const tableBody = document.getElementById('transactionTableBody');
         tableBody.innerHTML = '';
-        transactions.forEach(txn => {
-            const row = `
-            <tr>
-                <td>${txn.BSDate}</td>
-                <td>${txn.TxnDate}</td>
-                <td>${txn.Particulars}</td>
-                <td>${txn.ChequeNum}</td>
-                <td>${txn.Debit}</td>
-                <td>${txn.Credit}</td>
-                <td>${txn.Balance}</td>
-            </tr>`;
-            tableBody.innerHTML += row;
-        });
+        if (transactions.length > 0) {
+            transactions.forEach(txn => {
+                const row = `
+                <tr>
+                    <td>${txn.BSDate}</td>
+                    <td>${txn.TxnDate}</td>
+                    <td>${txn.Particulars}</td>
+                    <td>${txn.ChequeNum}</td>
+                    <td>${txn.Debit}</td>
+                    <td>${txn.Credit}</td>
+                    <td>${txn.Balance}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+            initialMessage.style.display = 'none';
+            noResultsMessage.style.display = 'none';
+        } else {
+            noResultsMessage.style.display = 'block';
+            initialMessage.style.display = 'none';
+        }
         showBaseModal(false);
         console.log(data);
     })
     .catch(error => {
         console.error('Error:', error);
         showBaseModal(false);
-        
+        alert('Error fetching data: ' + error.message);
     });
+
+    if (!transactions || transactions.length === 0) {
+        initialMessage.style.display = 'block';
+    }
 }
 
-function convertBSToAD(bsDate) {
-    // Implement BS to AD date conversion logic
-    // For simplicity, return the same date in this example
-    return bsDate;
+function convertADtoBS(date) {
+    // This is a simplified approximation and may not be accurate for all dates.
+    const adDate = new Date(date);
+    const bsOffsetYears = 56;
+    const bsOffsetMonths = 8;
+    const bsOffsetDays = 15;
+
+    // Calculate approximate BS date
+    let bsYear = adDate.getFullYear() + bsOffsetYears;
+    let bsMonth = adDate.getMonth() + bsOffsetMonths + 1; // JavaScript months are 0-indexed
+    let bsDay = adDate.getDate() + bsOffsetDays;
+
+    // Adjust for overflow of days in months
+    const daysInMonth = [31, (bsYear % 4 === 0 && bsYear % 100 !== 0) || bsYear % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    while (bsDay > daysInMonth[bsMonth - 1]) {
+        bsDay -= daysInMonth[bsMonth - 1];
+        bsMonth++;
+        if (bsMonth > 12) {
+            bsMonth = 1;
+            bsYear++;
+        }
+    }
+
+    return `${bsYear}-${bsMonth.toString().padStart(2, '0')}-${bsDay.toString().padStart(2, '0')}`;
 }
 
 function exportTable(type) {
@@ -396,7 +442,7 @@ function exportTable(type) {
 
 
 function printTable() {
-    // Implement print functionality
+    window.print();
 }
 </script>
 {% endblock extra_js %}

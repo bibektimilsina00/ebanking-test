@@ -60,14 +60,14 @@ def export_to_pdf(transactions):
     width, height = letter
     y = height - 50  # Start position for the Y-axis
     
-    p.drawString(30, y, 'BS Date | Transaction Date | Particulars | Cheque Number | Debit | Credit | Balance')
+    p.drawString(30, y, 'BS Date | Transaction Date | Particulars  | Debit | Credit | Balance')
     y -= 20
     
     for txn in transactions:
         if y < 40:  # Min Y boundary before adding a new page
             p.showPage()
             y = height - 50
-        p.drawString(30, y, f"{txn.get('BSDate')} | {txn.get('TransactionDate')} | {txn.get('Particulars')} | {txn.get('ChequeNumber')} | {txn.get('Debit')} | {txn.get('Credit')} | {txn.get('Balance')}")
+        p.drawString(30, y, f"{txn.get('BSDate')} | {txn.get('TransactionDate')} | {txn.get('Particulars')} | {txn.get('Debit')} | {txn.get('Credit')} | {txn.get('Balance')}")
         y -= 20
     
     p.showPage()
