@@ -121,8 +121,6 @@ class BranchDashboardView(LoginRequiredMixin, TemplateView):
         try:
             response = requests.post(api_url, json=payload)
             response_data = response.json()
-            
-            print(response_data)
             if response.status_code == 200 and response_data.get('isSuccess'):
                 return json.loads(response_data.get('result'))
         except requests.RequestException as e:
