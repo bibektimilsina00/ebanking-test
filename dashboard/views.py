@@ -90,9 +90,16 @@ class BranchDashboardView(LoginRequiredMixin, TemplateView):
         except Organization.DoesNotExist:
             context['error'] = 'Organization not found'
             return context
-
-        context['accounts'] = self.fetch_member_ledger(organization, branch.member_number)
+        access_accounts = set(branch.available_accounts.split(','))  
+        # all_accounts= self.fetch_member_ledger(organization, branch.member_number)
+        context['accounts']= self.fetch_member_ledger(organization, branch.member_number)
+        # filtered_accounts = [acc for acc in all_accounts if acc['AccNum'] in access_accounts]
+        
+        
+        # context['accounts']=filtered_accounts
         total_balance = sum(account['PBal'] for account in context['accounts'] if 'PBal' in account)
+        
+        
         
         # all user created by the current user and whole role is staff
         all_staff = Staff.objects.filter(branch__owner=self.request.user)
@@ -190,3 +197,16 @@ class RedirectDashboardView(View):
             'staff': 'staff_dashboard'
         }
         return redirect(role_dashboard_map.get(user.role, 'login'))
+
+
+
+
+
+class AccountDetailView(LoginRequiredMixin, TemplateView):
+    template_name = 'dashboard/account_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        account_number = self.kwargs.get('account_number')
+        context['account_number'] = account_number
+        return context

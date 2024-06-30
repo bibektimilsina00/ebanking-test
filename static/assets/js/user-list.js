@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const accountItem = document.createElement('div');
             accountItem.classList.add('account-item');
             accountItem.innerHTML = `
-                <input type="checkbox" checked id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
+                <input type="checkbox"  id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
                 <label for="account-${account.AccountNo}">
                     ${account.GroupName} (${account.AccNum}): ${account.PBal}
                 </label>
@@ -245,3 +245,82 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+//// User Edit Offcanvas
+
+function showUserEditCanvas(userId) {
+    fetch(`/users/get_user_info/${userId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Set form values
+                document.getElementById('edit-user-firstname').value = data.data.first_name;
+                document.getElementById('edit-user-lastname').value = data.data.last_name;
+                document.getElementById('edit-user-email').value = data.data.email;
+                document.getElementById('edit-user-contact').value = data.data.phone;
+                if (document.getElementById('edit-username')) {
+                    document.getElementById('edit-username').value = data.data.username || '';
+                }
+
+                // Set the action of the form to include the user ID
+                document.getElementById('editUserForm').action = `/users/update-user/${userId}/`;
+
+                // Show available accounts checkboxes
+                showAccountCheckbox(data.data.available_accounts);
+
+                // Show the offcanvas
+                const offcanvasElement = document.getElementById('offcanvasEditUser');
+                const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+                offcanvas.show();
+            } else {
+                alert('Failed to fetch user data: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            alert('Error fetching user data: ' + error);
+        });
+
+        function showAccountCheckbox(ledgerData) {
+            const accountList = document.getElementById('account-list-edit');
+            accountList.innerHTML = '';
+        
+            ledgerData.forEach(account => {
+                const accountItem = document.createElement('div');
+                accountItem.classList.add('account-item');
+                accountItem.innerHTML = `
+                    <input type="checkbox"  checked id="account-${account}" name="accounts" value="${account}">
+                    <label for="account-${account}">
+                        ${account} 
+                    </label>
+                `;
+                accountList.appendChild(accountItem);
+            });
+        }
+}
+
+
+       
+        
+
+
+
+
+
+
+ 
+
+
+// Example usage: add event listeners to your edit buttons in your HTML or dynamically via JS
+document.querySelectorAll('.edit-user-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const userId = this.getAttribute('data-user-id');
+        showUserEditCanvas(userId);
+    });
+});
+
+
+
+
+

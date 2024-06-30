@@ -321,9 +321,13 @@ function validateDateRange(startDate, endDate) {
     return diffDays <= 100;
 }
 
-var globalTransactions = [];
 
 
+
+var global_transactions = [];
+var global_startDate = '';
+var global_endDate = '';
+var global_account_number = '';
 function applyFilter(startDate, endDate) {
     const ajaxUrl = document.getElementById('filterForm').dataset.ajaxUrl;
     const account = document.getElementById('UserRole').value;
@@ -344,6 +348,10 @@ function applyFilter(startDate, endDate) {
     .then(response => response.json())
     .then(data => {
         const transactions = data.transactions;
+        globalTransactions = transactions;
+        global_startDate = startDate;
+        global_endDate = endDate;
+        global_account_number = account;
         tableBody.innerHTML = '';
         if (transactions.length > 0) {
             transactions.forEach(txn => {
@@ -365,8 +373,11 @@ function applyFilter(startDate, endDate) {
             noResultsMessage.style.display = 'block';
             initialMessage.style.display = 'none';
         }
+
         showBaseModal(false);
-        console.log(data);
+
+
+        
     })
     .catch(error => {
         console.error('Error:', error);
@@ -374,9 +385,7 @@ function applyFilter(startDate, endDate) {
         alert('Error fetching data: ' + error.message);
     });
 
-    if (!transactions || transactions.length === 0) {
-        initialMessage.style.display = 'block';
-    }
+    
 }
 
 function convertADtoBS(date) {
@@ -407,13 +416,16 @@ function convertADtoBS(date) {
 }
 
 function exportTable(type) {
-    const csrfToken = "{{ csrf_token }}"; // This will not work directly in external JS files.
 
-    console.log(type,globalTransactions)
+
+    const csrfToken = "{{ csrf_token }}"; 
     fetch('/report/export/', {
         method: 'POST',
         body: JSON.stringify({
             transactions: globalTransactions,
+            start_date: global_startDate,
+            end_date: global_endDate,
+            account_number: global_account_number,
             type: type
         }),
         headers: {
@@ -421,7 +433,7 @@ function exportTable(type) {
             'X-CSRFToken': csrfToken
         }
     })
-    .then(response => response.blob()) // Assuming you want to handle a file download.
+    .then(response => response.blob()) 
     .then(blob => {
         // Handling file download.
         const url = window.URL.createObjectURL(blob);

@@ -209,8 +209,9 @@
                                                 
                                             </td>
                                             <td>
-                                                <div class="d-inline-block text-nowrap">
-                                                    <button class="btn btn-sm btn-icon">
+
+                                                <div  class="d-inline-block text-nowrap">
+                                                    <button id="editUserButton"  data-user-id="{{user}}" onclick="showUserEditCanvas({{user.id}})" class="btn btn-sm btn-icon">
                                                         <i class="bx bx-edit"></i>
                                                     </button>
                                                     <button class="btn btn-sm btn-icon delete-record">
@@ -286,6 +287,7 @@
                         {% block add_user_form %}
                         {% include "widgets/add_user_form.html" %}
                         {% endblock add_user_form %}
+                        {% include "widgets/edit_user_form.html" %}
                         
                     </div>
                 </div>

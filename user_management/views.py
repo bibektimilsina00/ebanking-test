@@ -12,6 +12,7 @@ from accounts.models import CustomUser
 from organizations.models import Organization
 from branches.models import Branch
 from staff.models import Staff
+from django.views.decorators.http import require_POST
 
 
 from django.db.models import Q
@@ -171,3 +172,88 @@ class CreateUserView(View):
             fail_silently=False,
         )
         return redirect(reverse('user_list'))
+
+
+
+
+
+
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def get_user_info(request, user_id):
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+        
+        account_numbers = []
+        
+        if user.role == 'branch':
+            branches = user.branches.all().values('available_accounts')
+            account_numbers = [
+                account.strip() for branch in branches for account in branch['available_accounts'].split(',') if branch['available_accounts']
+            ]
+        elif user.role == 'staff':
+            staff = user.staff.all().values('access_accounts')
+            account_numbers = [
+                account.strip() for s in staff for account in s['access_accounts'].split(',') if s['access_accounts']
+            ]
+            
+
+        data = {
+            'email': user.email,
+            'phone': user.phone,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'address': user.address,
+            'available_accounts': account_numbers
+        }
+        
+        
+        return JsonResponse({'status': 'success', 'data': data})
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+    
+    
+    
+    
+
+@login_required
+@require_POST 
+def update_user(request, user_id):
+    # Attempt to retrieve the user from the database.
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+
+    # Update general user information.
+    user.email = request.POST.get('email', user.email)  # Use existing value if not provided
+    user.phone = request.POST.get('phone', user.phone)  # Use existing value if not provided
+    user.first_name = request.POST.get('first_name', user.first_name)  # Use existing value if not provided
+    user.last_name = request.POST.get('last_name', user.last_name)  # Use existing value if not provided
+    user.address = request.POST.get('address', user.address)  # Use existing value if not provided
+
+    # Update role-specific information.
+    accounts = request.POST.getlist('accounts')  # Fetch the list of accounts
+    
+    print(accounts)
+    
+    
+    
+    if user.role == 'branch':
+        # Update all branches associated with this user.
+        for branch in user.branches.all():
+            branch.available_accounts = ','.join(accounts)
+            branch.save()
+    elif user.role == 'staff':
+        # Update all staff profiles associated with this user.
+        staff = user.staff_profile.all()  # Assuming there is a related_name='staff_profile' in the Staff model.
+        for s in staff:
+            s.access_accounts = ','.join(accounts)
+            s.save()
+
+    # Save the updated user information.
+    user.save()
+    
+    return redirect(reverse('user_list'))

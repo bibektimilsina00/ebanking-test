@@ -35,6 +35,9 @@ class ReportView(View):
                 return context
 
             context['accounts'] = self.fetch_member_ledger(organization, branch.member_number)
+            
+            
+            
             return context
             
         if self.request.user.role == "staff":
@@ -93,7 +96,7 @@ class ReportView(View):
         account_number = request.POST.get('AccountNo')
         start_date_str = request.POST.get('start_date')
         end_date_str = request.POST.get('end_date')
-
+ 
         # Convert start_date and end_date from strings to datetime objects
         try:
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
@@ -105,11 +108,11 @@ class ReportView(View):
         client_id = organization.clint_id
         username = organization.username
         payload = {
-            "AccNum": account_number,  
-            "StartDate": start_date.strftime('%Y-%m-%d'),
-            "EndDate": end_date.strftime('%Y-%m-%d'),
-            "clientId": client_id,
-            "username": username
+             "AccNum": "KBS0000124",
+    "EndDate": "2023-05-22",
+    "StartDate": "2013-05-22",
+    "clientId": "66",
+  "username":"shrawan" 
         }
 
         api_url = f"{organization.base_url}SavingLedgerEbank"
@@ -132,15 +135,21 @@ class ReportView(View):
 @require_http_methods(["POST"])  
 def export_report(request):
     try:
+        
+    
         data = json.loads(request.body)  # Load JSON data from request body
         transactions = data.get('transactions', [])
+        account_number = data.get('account_number', '')
+        start_date = data.get('start_date', '')
+        end_date = data.get('end_date', '')
+        
         report_type = data.get('type', '')
         if report_type == 'csv':
             return export_to_csv(transactions)
         elif report_type == 'excel':
             return export_to_excel(transactions)
         elif report_type == 'pdf':
-            return export_to_pdf(transactions)
+            return export_to_pdf(transactions, account_number, start_date, end_date)
 
         return HttpResponse("Invalid report type", status=400)
     except json.JSONDecodeError:
