@@ -96,7 +96,7 @@ class ReportView(View):
         account_number = request.POST.get('AccountNo')
         start_date_str = request.POST.get('start_date')
         end_date_str = request.POST.get('end_date')
- 
+
         # Convert start_date and end_date from strings to datetime objects
         try:
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
@@ -108,11 +108,11 @@ class ReportView(View):
         client_id = organization.clint_id
         username = organization.username
         payload = {
-             "AccNum": "KBS0000124",
-    "EndDate": "2023-05-22",
-    "StartDate": "2013-05-22",
-    "clientId": "66",
-  "username":"shrawan" 
+        "AccNum": account_number,
+        "EndDate": end_date,
+        "StartDate":start_date,
+        "clientId": client_id,
+        "username":username
         }
 
         api_url = f"{organization.base_url}SavingLedgerEbank"
