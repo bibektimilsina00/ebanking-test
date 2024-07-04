@@ -99,20 +99,18 @@ class ReportView(View):
         end_date_str = request.POST.get('end_date')
         
         
-        print(account_number)
-        print(start_date_str)
-        print(end_date_str)
+
         
 
 
         client_id = organization.clint_id
         username = organization.username
         payload = {
-           "AccNum": "KBS0000124",
-    "EndDate": "2025-05-22",
-    "StartDate": "2013-05-22",
-    "clientId": "66",
-  "username":"shrawan"
+           "AccNum": account_number,
+    "EndDate": end_date_str,
+    "StartDate": start_date_str,
+    "clientId": client_id,
+  "username":username,
         }
 
         api_url = f"{organization.base_url}SavingLedgerEbank"
