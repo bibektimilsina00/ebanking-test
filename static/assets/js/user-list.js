@@ -193,20 +193,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 
     // Fetch and display accounts when the form is opened for branch/member roles
     const offcanvasAddUser = document.getElementById('offcanvasAddUser');
@@ -249,76 +235,104 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //// User Edit Offcanvas
 
+
 function showUserEditCanvas(userId) {
+
+    console.log(userId);
     fetch(`/users/get_user_info/${userId}/`)
         .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
+        .then(userData => {
+            if (userData.status === 'success') {
                 // Set form values
-                document.getElementById('edit-user-firstname').value = data.data.first_name;
-                document.getElementById('edit-user-lastname').value = data.data.last_name;
-                document.getElementById('edit-user-email').value = data.data.email;
-                document.getElementById('edit-user-contact').value = data.data.phone;
+                document.getElementById('edit-user-firstname').value = userData.data.first_name;
+                document.getElementById('edit-user-lastname').value = userData.data.last_name;
+                document.getElementById('edit-user-email').value = userData.data.email;
+                document.getElementById('edit-user-contact').value = userData.data.phone;
                 if (document.getElementById('edit-username')) {
-                    document.getElementById('edit-username').value = data.data.username || '';
+                    document.getElementById('edit-username').value = userData.data.username || '';
                 }
-
-                // Set the action of the form to include the user ID
                 document.getElementById('editUserForm').action = `/users/update-user/${userId}/`;
+                
 
-                // Show available accounts checkboxes
-                showAccountCheckbox(data.data.available_accounts);
+               
+
+
+
+
+
+                showBaseModal(true);
+                // Fetch external accounts
+                fetch('/accounts/fetch-member-ledger/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        MembNum: userData.data.member_number // Ensure this key matches your payload
+                    })
+                })
+                .then(response => response.json())
+                .then(apiData => {
+                    showBaseModal(false);
+                    if (apiData.isSuccess) {
+                        // Show available accounts checkboxes
+                        const userAccounts = userData.data.available_accounts;
+
+                        
+                        const ledgerData = JSON.parse(apiData.result);
+                        
+                        showAccountCheckbox(ledgerData, userAccounts);
+                    } else {
+                        document.getElementById('account-list-edit').innerHTML = `
+                            <div class="alert alert-danger" role="alert">
+                                ${apiData.error}
+                            </div>`;
+                    }
+                })
+                .catch(error => {
+                    showBaseModal(false);
+                    console.error('Error fetching external accounts:', error);
+                    document.getElementById('account-list-edit').innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            Failed to retrieve data from external API
+                        </div>`;
+                });
 
                 // Show the offcanvas
                 const offcanvasElement = document.getElementById('offcanvasEditUser');
                 const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
                 offcanvas.show();
             } else {
-                alert('Failed to fetch user data: ' + data.message);
+                showBaseModal(false);
+                alert('Failed to fetch user data: ' + userData.message);
             }
         })
         .catch(error => {
             console.error('Error fetching user data:', error);
             alert('Error fetching user data: ' + error);
         });
+}
 
-        function showAccountCheckbox(ledgerData) {
-            const accountList = document.getElementById('account-list-edit');
-            accountList.innerHTML = '';
-        
-            ledgerData.forEach(account => {
-                const accountItem = document.createElement('div');
-                accountItem.classList.add('account-item');
-                accountItem.innerHTML = `
-                    <input type="checkbox"  checked id="account-${account}" name="accounts" value="${account}">
-                    <label for="account-${account}">
-                        ${account} 
-                    </label>
-                `;
-                accountList.appendChild(accountItem);
-            });
-        }
+function showAccountCheckbox(ledgerData, userAccounts) {
+    const accountList = document.getElementById('account-list-edit');
+    accountList.innerHTML = '';
+    ledgerData.forEach(account => {
+        const isChecked = userAccounts.includes(account.AccNum);
+        const accountItem = document.createElement('div');
+        accountItem.classList.add('account-item');
+        accountItem.innerHTML = `
+            <input type="checkbox" ${isChecked ? 'checked' : ''} id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
+            <label for="account-${account.AccountNo}">
+                    ${account.GroupName} (${account.AccNum}): ${account.PBal}
+                </label>
+        `;
+        accountList.appendChild(accountItem);
+    });
 }
 
 
-       
-        
 
-
-
-
-
-
- 
-
-
-// Example usage: add event listeners to your edit buttons in your HTML or dynamically via JS
-document.querySelectorAll('.edit-user-button').forEach(button => {
-    button.addEventListener('click', function() {
-        const userId = this.getAttribute('data-user-id');
-        showUserEditCanvas(userId);
-    });
-});
 
 
 

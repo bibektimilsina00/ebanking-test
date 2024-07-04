@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
@@ -106,14 +107,6 @@ class BranchDashboardView(LoginRequiredMixin, TemplateView):
         context['all_staff'] = all_staff
         context['total_balance'] = total_balance
         
-        
-        
-        
-        
-        
-        
-        
-        
         return context
 
     def fetch_member_ledger(self, organization, member_number):
@@ -202,11 +195,100 @@ class RedirectDashboardView(View):
 
 
 
-class AccountDetailView(LoginRequiredMixin, TemplateView):
-    template_name = 'dashboard/account_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        account_number = self.kwargs.get('account_number')
-        context['account_number'] = account_number
-        return context
+class AccountDetailView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        account_number = self.kwargs.get('account_num')
+        
+        organization = None
+        if self.request.user.role == 'branch':
+            branch = Branch.objects.get(owner=self.request.user)
+            organization = branch.organization
+        elif self.request.user.role == 'staff':
+            branch = Branch.objects.get(staff_members__user=self.request.user)
+            organization = branch.organization
+        
+        # API request details
+        api_url = f'{organization.base_url}AccountDetailsLedgersEbank'
+        payload = {
+            "AccNum": account_number,
+            "clientId": organization.clint_id,
+            "flag": "SAVINGACC",
+            "username": organization.username
+        }
+        
+        # Make the API request
+        response = requests.post(api_url, json=payload)
+        
+        if response.status_code == 200:
+            api_response = response.json()
+            if api_response.get('isSuccess'):
+                try:
+                    # Parse the stringified JSON data
+                    account_data = json.loads(api_response['result'])
+                    # Filter the fields
+                    filtered_data = [
+                        {
+                            "GroupName": account.get("GroupName"),
+                            "AccNum": account.get("AccNum"),
+                            "AccName": account.get("AccName"),
+                            "Address": account.get("Address"),
+                            "Tel": account.get("Tel"),
+                            "Mobile": account.get("Mobile"),
+                            "LoanDate": account.get("LoanDate"),
+                            "NoALDateBS": account.get("NoALDateBS"),
+                            "MaturityDate": account.get("MaturityDate"),
+                            "MaturityDateBS": account.get("MaturityDateBS"),
+                            "SanctionedAmount": account.get("SanctionedAmount"),
+                            "LoanAmount": account.get("LoanAmount"),
+                            "PeriodInMonths": account.get("PeriodInMonths"),
+                            "IntRate": account.get("IntRate"),
+                            "LoanBalance": account.get("LoanBalance")
+                        } for account in account_data
+                    ]
+                    return JsonResponse({'isSuccess': True, 'data': filtered_data})
+                except json.JSONDecodeError:
+                    return JsonResponse({'isSuccess': False, 'error': 'Failed to parse account data'})
+            else:
+                return JsonResponse({'isSuccess': False, 'error': api_response.get('result', 'Failed to retrieve data from API')})
+        else:
+            return JsonResponse({'isSuccess': False, 'error': 'Failed to retrieve data from API'})
+
+    
+ 
+        account_number = self.kwargs.get('account_num')
+        
+        organization = None
+        if self.request.user.role == 'branch':
+            branch = Branch.objects.get(owner=self.request.user)
+            organization = branch.organization
+        elif self.request.user.role == 'staff':
+            branch = Branch.objects.get(staff_members__user=self.request.user)
+            organization = branch.organization
+        
+        
+        # API request details
+        api_url = f'{organization.base_url}AccountDetailsLedgersEbank'
+        payload = {
+            "AccNum": account_number,
+            "clientId": organization.clint_id,
+            "flag": "SAVINGACC",
+            "username": organization.username
+        }
+        
+        # Make the API request
+        response = requests.post(api_url, json=payload)
+        
+        if response.status_code == 200:
+            api_response = response.json()
+            if api_response.get('isSuccess'):
+                try:
+                    # Parse the stringified JSON data
+                    account_data = json.loads(api_response['result'])
+                    return JsonResponse({'isSuccess': True, 'data': account_data})
+                except json.JSONDecodeError:
+                    return JsonResponse({'isSuccess': False, 'error': 'Failed to parse account data'})
+            else:
+                return JsonResponse({'isSuccess': False, 'error': api_response.get('result', 'Failed to retrieve data from API')})
+        else:
+            return JsonResponse({'isSuccess': False, 'error': 'Failed to retrieve data from API'})

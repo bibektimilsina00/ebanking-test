@@ -1,3 +1,5 @@
+
+
 {% extends "base.html" %}
 {% load static %}
 
@@ -33,13 +35,14 @@
                                 <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
 
                                     <div class="col-md-2 user_role">
-                                        <select id="UserRole" class="form-select text-capitalize" name="account">
+                                        <select id="UserRole" class="form-select text-capitalize" name="account" onchange="handleAccountChange(this)">
                                             <option value="">Select Account</option>
                                             {% for account in accounts %}
-                                            <option value="{{ account.AccNum }}">{{ account.AccNum }}</option>
+                                            <option value="{{ account.AccNum }}" data-account="{{ account}}">{{ account.AccNum }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
+
 
                                     <div class="col-md-2">
                                         <select id="date_type" class="form-select" name="date_type">
@@ -328,6 +331,22 @@ var global_transactions = [];
 var global_startDate = '';
 var global_endDate = '';
 var global_account_number = '';
+var global_account_group = '';
+
+
+function handleAccountChange(selectElement) {
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const accountData = selectedOption.getAttribute('data-account');
+    const account = JSON.parse(accountData.replace(/'/g, '"'));
+    global_account_group = account.GroupName;
+    global_intrest_rate = account.IntRate;
+
+
+
+}
+
+
+
 function applyFilter(startDate, endDate) {
     const ajaxUrl = document.getElementById('filterForm').dataset.ajaxUrl;
     const account = document.getElementById('UserRole').value;
@@ -426,7 +445,9 @@ function exportTable(type) {
             start_date: global_startDate,
             end_date: global_endDate,
             account_number: global_account_number,
-            type: type
+            type: type,
+            account_group: global_account_group,
+            intrest_rate: global_intrest_rate, 
         }),
         headers: {
             'Content-Type': 'application/json',

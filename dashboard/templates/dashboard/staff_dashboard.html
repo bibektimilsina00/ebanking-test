@@ -2,15 +2,9 @@
 
 {% load static %}
 {% block content %}
-
-
 <!-- Layout wrapper -->
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
-
-
-
-
         <!-- Menu -->
 
         {% block sidebar %}
@@ -26,9 +20,8 @@
             {% endblock navbar %}
 
             <!--  password reset form -->
-              {% include "widgets/password_reset_model.html" %}
+            {% include "widgets/password_reset_model.html" %}
             <!-- / password reset form -->
-           
             
             <!-- / Navbar -->
 
@@ -42,10 +35,14 @@
                         <div class="col-lg-8 mb-4 order-0">
                             {% if accounts %}
                                 {% for account in accounts %}
+
+                                <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
                                     <div class="card mb-4">
+
+                                        
                                         <div class="d-flex align-items-center row">
                                             <div class="col-sm-3 text-center">
-                                                <img src="https://e7.pngegg.com/pngimages/348/800/png-clipart-man-wearing-blue-shirt-illustration-computer-icons-avatar-user-login-avatar-blue-child.png"
+                                                <img src="{% static "assets/img/elements/account.png"%}"
                                                     alt="User Avatar" class="img-fluid rounded-circle">
                                             </div>
                                             <div class="col-sm-9">
@@ -64,6 +61,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    </a>
                                 {% endfor %}
                             {% else %}
                                 <div class="card mb-4 text-center">
@@ -156,5 +154,57 @@
     passwordChangeModal.show();
 {% endif %}
 </script>
+
+
+<script>
+    function fetchAccountDetails(accountNumber) {
+        const url =  `/dashboard/account_detail/${accountNumber}`;
+    
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                let modalBody = document.getElementById('accountDetailModalBody');
+                modalBody.innerHTML = '';
+                
+                if (data.isSuccess) {
+                    data.data.forEach(account => {
+                        let table = document.createElement('table');
+                        table.classList.add('table', 'table-striped');
+                        
+                        for (const [key, value] of Object.entries(account)) {
+                            let tr = document.createElement('tr');
+                            
+                            let th = document.createElement('th');
+                            th.textContent = key;
+                            
+                            let td = document.createElement('td');
+                            td.textContent = value;
+                            
+                            tr.appendChild(th);
+                            tr.appendChild(td);
+                            table.appendChild(tr);
+                        }
+                        
+                        modalBody.appendChild(table);
+                    });
+                } else {
+                    modalBody.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            ${data.error}
+                        </div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching account details:', error);
+                document.getElementById('accountDetailModalBody').innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        Failed to retrieve data from API
+                    </div>`;
+            });
+    
+        // Show the modal
+        $('#accountDetailModal').modal('show');
+    }
+    </script>
 
 {% endblock extra_js %}

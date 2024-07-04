@@ -131,6 +131,14 @@ def fetch_member_ledger(request):
 
 
 
+from django.views.generic import TemplateView
+from django.http import JsonResponse
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+@method_decorator(login_required, name='dispatch')
 class ProfileView(TemplateView):
     template_name = 'accounts/profile.html'
 
@@ -142,10 +150,9 @@ class ProfileView(TemplateView):
         user.phone = request.POST.get('phoneNumber', user.phone)
         user.address = request.POST.get('address', user.address)
 
-        avatar_file = request.FILES.get('avatar')
+        avatar_file = request.FILES.get('avtar')
         if avatar_file:
-            user.avatar = avatar_file
-
+            user.avtar = avatar_file
         try:
             user.full_clean()  # This will check for any field errors according to the model's validation
             user.save()

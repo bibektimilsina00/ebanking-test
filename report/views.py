@@ -14,6 +14,7 @@ from staff.models import Staff
 from .models import ReportViewModel
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 
 from .utils.export_report import export_to_csv,export_to_excel,export_to_pdf
 
@@ -96,23 +97,22 @@ class ReportView(View):
         account_number = request.POST.get('AccountNo')
         start_date_str = request.POST.get('start_date')
         end_date_str = request.POST.get('end_date')
+        
+        
+        print(account_number)
+        print(start_date_str)
+        print(end_date_str)
+        
 
-        # Convert start_date and end_date from strings to datetime objects
-        try:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-        except ValueError as e:
-            context.update({'transactions': transactions, 'error': 'Invalid date format'})
-            return render(request, self.template_name, context)
 
         client_id = organization.clint_id
         username = organization.username
         payload = {
-        "AccNum": account_number,
-        "EndDate": end_date,
-        "StartDate":start_date,
-        "clientId": client_id,
-        "username":username
+           "AccNum": "KBS0000124",
+    "EndDate": "2025-05-22",
+    "StartDate": "2013-05-22",
+    "clientId": "66",
+  "username":"shrawan"
         }
 
         api_url = f"{organization.base_url}SavingLedgerEbank"
@@ -131,17 +131,35 @@ class ReportView(View):
     
     
 
-
+@login_required
 @require_http_methods(["POST"])  
 def export_report(request):
     try:
         
-    
+        # required data 
+        # transactions, account_number, start_date, end_date Orgnization Address, Orginization icon
+        
+        organization = None
+        if request.user.role == "branch":
+            branch = Branch.objects.get(owner=request.user)
+            organization = branch.organization
+        else:
+            branch = Branch.objects.get(staff_members__user=request.user)
+            organization = branch.organization
+        org_owner=organization.owner
+            
+        
+            
+            
+        
+        
         data = json.loads(request.body)  # Load JSON data from request body
         transactions = data.get('transactions', [])
         account_number = data.get('account_number', '')
         start_date = data.get('start_date', '')
         end_date = data.get('end_date', '')
+        intrest_rate = data.get('intrest_rate', '')
+        group_name = data.get('account_group', '')
         
         report_type = data.get('type', '')
         if report_type == 'csv':
@@ -149,7 +167,7 @@ def export_report(request):
         elif report_type == 'excel':
             return export_to_excel(transactions)
         elif report_type == 'pdf':
-            return export_to_pdf(transactions, account_number, start_date, end_date)
+            return export_to_pdf(user=org_owner,transactions=transactions, account_number=account_number, start_date=start_date, end_date=end_date,group_name=group_name,interest_rate=intrest_rate)
 
         return HttpResponse("Invalid report type", status=400)
     except json.JSONDecodeError:

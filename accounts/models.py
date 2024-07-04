@@ -7,8 +7,8 @@ from django_cryptography.fields import encrypt
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email =  (models.EmailField(unique=True))
     phone = encrypt(models.CharField(max_length=15, blank=True))
-    first_name = encrypt(models.CharField(max_length=30, blank=True))
-    last_name = encrypt(models.CharField(max_length=30, blank=True))
+    first_name =  (models.CharField(max_length=30, blank=True))
+    last_name =  (models.CharField(max_length=30, blank=True))
     address = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

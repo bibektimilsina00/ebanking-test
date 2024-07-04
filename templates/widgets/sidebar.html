@@ -76,7 +76,7 @@
 
                 {% for account in accounts %}
                 <li class="menu-item">
-                    <a href="{% url "account_detail" %}" class="menu-link">
+                    <a    onclick="fetchAccountDetails('{{ account.AccNum }}')" class="menu-link">
                         <div data-i18n="Without menu">{{account.GroupName}}</div>
                     </a>
                 </li>

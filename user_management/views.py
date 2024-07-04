@@ -194,28 +194,24 @@ def get_user_info(request, user_id):
                 account.strip() for branch in branches for account in branch['available_accounts'].split(',') if branch['available_accounts']
             ]
         elif user.role == 'staff':
-            staff = user.staff.all().values('access_accounts')
-            account_numbers = [
-                account.strip() for s in staff for account in s['access_accounts'].split(',') if s['access_accounts']
-            ]
-            
-
+            staff_profile = user.staff_profile
+            if staff_profile and staff_profile.access_accounts:
+                account_numbers = [
+                    account.strip() for account in staff_profile.access_accounts.split(',')
+                ]
         data = {
             'email': user.email,
             'phone': user.phone,
             'first_name': user.first_name,
+            'username': user.username,
             'last_name': user.last_name,
             'address': user.address,
-            'available_accounts': account_numbers
+            'available_accounts': account_numbers,
         }
-        
         
         return JsonResponse({'status': 'success', 'data': data})
     except CustomUser.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
-    
-    
-    
     
 
 @login_required
@@ -233,6 +229,7 @@ def update_user(request, user_id):
     user.first_name = request.POST.get('first_name', user.first_name)  # Use existing value if not provided
     user.last_name = request.POST.get('last_name', user.last_name)  # Use existing value if not provided
     user.address = request.POST.get('address', user.address)  # Use existing value if not provided
+    user.username = request.POST.get('username', user.username)  # Use existing value if not provided
 
     # Update role-specific information.
     accounts = request.POST.getlist('accounts')  # Fetch the list of accounts
@@ -248,10 +245,9 @@ def update_user(request, user_id):
             branch.save()
     elif user.role == 'staff':
         # Update all staff profiles associated with this user.
-        staff = user.staff_profile.all()  # Assuming there is a related_name='staff_profile' in the Staff model.
-        for s in staff:
-            s.access_accounts = ','.join(accounts)
-            s.save()
+        staff = user.staff_profile  # Assuming there is a related_name='staff_profile' in the Staff model.
+        staff.access_accounts = ','.join(accounts)
+        staff.save()
 
     # Save the updated user information.
     user.save()

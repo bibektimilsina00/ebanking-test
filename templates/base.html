@@ -110,7 +110,30 @@
         </div>
     </div>
 </div>
+
+
+
 <!-- End contact us form-->
+
+
+<!--- account deteail model form-->
+ <!-- Modal -->
+ <div class="modal fade" id="accountDetailModal" tabindex="-1" aria-labelledby="accountDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountDetailModalLabel">Account Detail</h5>
+
+            </div>
+            <div class="modal-body" id="accountDetailModalBody">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- End account detail form-->
 
 
 
@@ -141,6 +164,8 @@
     {% block extra_js %}
     {% endblock extra_js %}
 
+
+
     
     <script>
         function openContactModal() {
@@ -169,6 +194,24 @@
                 baseModalInstance.hide();
             }
         }
+    </script>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
     </script>
     
 
