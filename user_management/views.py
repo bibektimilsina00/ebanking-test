@@ -61,19 +61,28 @@ class UserListView(LoginRequiredMixin, TemplateView):
 class ResetPasswordView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user_id = request.POST.get("user_id")
+
+        org_user = CustomUser.objects.filter(role="organization")
+        org_data = org_user.first()
+
         try:
             user = CustomUser.objects.get(id=user_id)
             new_password = get_random_string(length=8)
             user.set_password(new_password)
             user.save()
             send_mail(
-                "Your Finman E-Banking Password Has Been Reset",
+                "Your E-Banking Password Has Been Reset",
                 f"Dear {user.first_name} {user.last_name},\n\n"
                 "We wanted to inform you that your password has been successfully reset. "
                 "Below is your new password:\n\n"
                 f"Password: {new_password}\n\n"
                 "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
-                "If you have any questions or require further assistance, please do not hesitate to contact our support team.\n\n",
+                "If you have any questions or require further assistance, please do not hesitate to contact us at:\n"
+                f"Phone: {org_data.phone}\n"
+                f"Email: {org_data.email}\n\n"
+                "Thank you for choosing Finman E-Banking.\n\n"
+                "Best regards,\n"
+                "The  E-Banking Team",
                 [user.email],
                 fail_silently=False,
             )
@@ -156,18 +165,24 @@ class CreateUserView(View):
         )
         new_user.set_password(new_password)
         try:
+            org_user = CustomUser.objects.filter(role="organization")
+            org_data = org_user.first()
             new_user.full_clean()
             new_user.save()
             send_mail(
-                "Welcome to Finman E-Banking",
-                f"Dear {first_name} {last_name},\n\n"
-                "We are pleased to inform you that your account has been successfully created on Finman E-Banking. "
-                "Below are your account details:\n\n"
-                f"Username: {username}\n"
+                "Your E-Banking Password Has Been Reset",
+                f"Dear {new_user.first_name} {new_user.last_name},\n\n"
+                "We wanted to inform you that your password has been successfully reset. "
+                "Below is your new password:\n\n"
                 f"Password: {new_password}\n\n"
                 "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
-                "Thank you for choosing Finman E-Banking.\n\n",
-                [email],
+                "If you have any questions or require further assistance, please do not hesitate to contact us at:\n"
+                f"Phone: {org_data.phone}\n"
+                f"Email: {org_data.email}\n\n"
+                "Thank you for choosing Finman E-Banking.\n\n"
+                "Best regards,\n"
+                "The  E-Banking Team",
+                [new_user.email],
                 fail_silently=False,
             )
 
@@ -189,19 +204,27 @@ class CreateUserView(View):
                 branch=Branch.objects.get(owner=request.user),
                 access_accounts=",".join(available_accounts),
             )
+            org_user = CustomUser.objects.filter(role="organization")
+            org_data = org_user.first()
 
             send_mail(
-                "Welcome to Finman E-Banking",
+                "Welcome to E-Banking",
                 f"Dear {first_name} {last_name},\n\n"
-                "We are pleased to inform you that your account has been successfully created on Finman E-Banking. "
+                "We are pleased to inform you that your account has been successfully created on E-Banking. "
                 "Below are your account details:\n\n"
                 f"Username: {username}\n"
                 f"Password: {new_password}\n\n"
                 "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
-                "Thank you for choosing Finman E-Banking.\n\n",
+                "If you have any questions or require further assistance, please do not hesitate to contact us at:\n"
+                f"Phone: {org_data.phone}\n"
+                f"Email: {org_data.email}\n\n"
+                "Thank you for choosing E-Banking.\n\n"
+                "Best regards,\n"
+                "The E-Banking Team",
                 [email],
                 fail_silently=False,
             )
+
         return redirect(reverse("user_list"))
 
 
