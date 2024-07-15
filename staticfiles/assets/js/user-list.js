@@ -55,6 +55,16 @@ function suspendUser(userId) {
     );
 }
 
+function deleteUser(userId) {
+    const deleteUserUrl = '/users/delete-user/'; // Static URL
+    showModal(
+        deleteUserUrl,
+        {
+            'user_id': userId
+        },
+        'Are you sure you want to delete this user?'
+    );
+}
 function activateUser(userId) {
     const activateUserUrl = '/users/activate-user/'; // Static URL
     showModal(
@@ -81,7 +91,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const searchText = this.value;
-
             // Fetch member data from the server
             fetch('/accounts/member-search/', {
                 method: 'POST',
@@ -157,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.isSuccess) {
                     const ledgerData = JSON.parse(data.result);
+                    console.log('Fetched accounts:', ledgerData);
                     fillFormWithMemberData(member);
                     displayAccountList(ledgerData);
                 } else {
@@ -175,13 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('add-user-lastname').value = member.MemberName.split(' ').slice(1).join(' ');
         document.getElementById('add-user-email').value = member.Email || '';
         document.getElementById('add-user-contact').value = member.Mobile || '';
+        document.getElementById('add-user-member-number').value = member.MemberNum || '';
     }
-
-
-
-
-
-
 
     function displayAccountList(ledgerData) {
         const accountList = document.getElementById('account-list');
@@ -191,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const accountItem = document.createElement('div');
             accountItem.classList.add('account-item');
             accountItem.innerHTML = `
-                <input type="checkbox" checked id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
+                <input type="checkbox"  id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
                 <label for="account-${account.AccountNo}">
                     ${account.GroupName} (${account.AccNum}): ${account.PBal}
                 </label>
@@ -199,6 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
             accountList.appendChild(accountItem);
         });
     }
+
 
     // Fetch and display accounts when the form is opened for branch/member roles
     const offcanvasAddUser = document.getElementById('offcanvasAddUser');
@@ -218,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({
 
-                MembNum: 'example_member_num'
+                MembNum: member.MemberNum
             })
         })
             .then(response => response.json())
@@ -235,5 +241,111 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error fetching accounts:', error);
                 showBaseModal(false);
             });
+
+        showBaseModal(false);
     }
 });
+
+
+//// User Edit Offcanvas
+
+
+function showUserEditCanvas(userId) {
+    fetch(`/users/get_user_info/${userId}/`)
+        .then(response => response.json())
+        .then(userData => {
+            if (userData.status === 'success') {
+                // Set form values
+                document.getElementById('edit-user-firstname').value = userData.data.first_name;
+                document.getElementById('edit-user-lastname').value = userData.data.last_name;
+                document.getElementById('edit-user-email').value = userData.data.email;
+                document.getElementById('edit-user-contact').value = userData.data.phone;
+                if (document.getElementById('edit-username')) {
+                    document.getElementById('edit-username').value = userData.data.username || '';
+                }
+                document.getElementById('editUserForm').action = `/users/update-user/${userId}/`;
+
+
+                // Fetch external accounts
+
+
+                console.log('Fetching external accounts...');
+                console.log(userData.data);
+                showBaseModal(true);
+                fetch('/accounts/fetch-member-ledger/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        MembNum: userData.data.member_number
+                    })
+                })
+                    .then(response => response.json())
+                    .then(apiData => {
+                        showBaseModal(false);
+                        if (apiData.isSuccess) {
+                            // Show available accounts checkboxes
+                            const userAccounts = userData.data.available_accounts;
+
+
+                            const ledgerData = JSON.parse(apiData.result);
+
+                            showAccountCheckbox(ledgerData, userAccounts);
+                        } else {
+                            document.getElementById('account-list-edit').innerHTML = `
+                            <div class="alert alert-danger" role="alert">
+                                ${apiData.error}
+                            </div>`;
+                        }
+                    })
+                    .catch(error => {
+                        showBaseModal(false);
+                        console.error('Error fetching external accounts:', error);
+                        document.getElementById('account-list-edit').innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            Failed to retrieve data from external API
+                        </div>`;
+                    });
+
+                // Show the offcanvas
+                const offcanvasElement = document.getElementById('offcanvasEditUser');
+                const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+                offcanvas.show();
+            } else {
+                showBaseModal(false);
+                alert('Failed to fetch user data: ' + userData.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            alert('Error fetching user data: ' + error);
+            showBaseModal(true);
+        });
+}
+
+function showAccountCheckbox(ledgerData, userAccounts) {
+    const accountList = document.getElementById('account-list-edit');
+    accountList.innerHTML = '';
+    ledgerData.forEach(account => {
+        const isChecked = userAccounts.includes(account.AccNum);
+        const accountItem = document.createElement('div');
+        accountItem.classList.add('account-item');
+        accountItem.innerHTML = `
+            <input type="checkbox" ${isChecked ? 'checked' : ''} id="account-${account.AccountNo}" name="accounts" value="${account.AccNum}">
+            <label for="account-${account.AccountNo}">
+                    ${account.GroupName} (${account.AccNum}): ${account.PBal}
+                </label>
+        `;
+        accountList.appendChild(accountItem);
+    });
+}
+
+
+
+
+
+
+
+
