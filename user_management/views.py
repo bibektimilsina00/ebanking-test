@@ -83,6 +83,7 @@ class ResetPasswordView(LoginRequiredMixin, View):
                 "Thank you for choosing Finman E-Banking.\n\n"
                 "Best regards,\n"
                 "The  E-Banking Team",
+                from_email=org_data.email,
                 recipient_list=[user.email],
                 fail_silently=False,
             )
@@ -182,6 +183,7 @@ class CreateUserView(View):
                 "Thank you for choosing Finman E-Banking.\n\n"
                 "Best regards,\n"
                 "The  E-Banking Team",
+                from_email=org_data.email,
                 recipient_list=[new_user.email],
                 fail_silently=False,
             )
@@ -221,6 +223,7 @@ class CreateUserView(View):
                 "Thank you for choosing E-Banking.\n\n"
                 "Best regards,\n"
                 "The E-Banking Team",
+                from_email=org_data.email,
                 recipient_list=[new_user.email],
                 fail_silently=False,
             )
