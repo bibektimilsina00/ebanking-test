@@ -55,6 +55,16 @@ function suspendUser(userId) {
     );
 }
 
+function deleteUser(userId) {
+    const deleteUserUrl = '/users/delete-user/'; // Static URL
+    showModal(
+        deleteUserUrl,
+        {
+            'user_id': userId
+        },
+        'Are you sure you want to delete this user?'
+    );
+}
 function activateUser(userId) {
     const activateUserUrl = '/users/activate-user/'; // Static URL
     showModal(

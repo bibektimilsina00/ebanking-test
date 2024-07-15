@@ -108,6 +108,19 @@ class ActivateUserView(LoginRequiredMixin, View):
             return HttpResponseBadRequest("User does not exist")
 
 
+class DeleteUserView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        user_id = request.POST.get("user_id")
+        try:
+            user = CustomUser.objects.get(id=user_id)
+            user.delete()
+            return JsonResponse(
+                {"status": "success", "message": "User deleted successfully."}
+            )
+        except CustomUser.DoesNotExist:
+            return HttpResponseBadRequest("User does not exist")
+
+
 class CreateUserView(View):
     def post(self, request, *args, **kwargs):
         email = request.POST.get("email")
