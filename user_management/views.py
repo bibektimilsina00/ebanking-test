@@ -171,18 +171,19 @@ class CreateUserView(View):
             new_user.full_clean()
             new_user.save()
             send_mail(
-                "Your E-Banking Password Has Been Reset",
-                f"Dear {new_user.first_name} {new_user.last_name},\n\n"
-                "We wanted to inform you that your password has been successfully reset. "
-                "Below is your new password:\n\n"
+                "Welcome to E-Banking",
+                f"Dear {first_name} {last_name},\n\n"
+                "We are pleased to inform you that your account has been successfully created on E-Banking. "
+                "Below are your account details:\n\n"
+                f"Username: {username}\n"
                 f"Password: {new_password}\n\n"
                 "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
                 "If you have any questions or require further assistance, please do not hesitate to contact us at:\n"
                 f"Phone: {org_data.phone}\n"
                 f"Email: {org_data.email}\n\n"
-                "Thank you for choosing Finman E-Banking.\n\n"
+                "Thank you for choosing E-Banking.\n\n"
                 "Best regards,\n"
-                "The  E-Banking Team",
+                "The E-Banking Team",
                 from_email=org_data.email,
                 recipient_list=[new_user.email],
                 fail_silently=False,
