@@ -80,7 +80,7 @@ class ResetPasswordView(LoginRequiredMixin, View):
                 "If you have any questions or require further assistance, please do not hesitate to contact us at:\n"
                 f"Phone: {org_data.phone}\n"
                 f"Email: {org_data.email}\n\n"
-                "Thank you for choosing Finman E-Banking.\n\n"
+                "Thank you for choosing  E-Banking.\n\n"
                 "Best regards,\n"
                 "The  E-Banking Team",
                 from_email=org_data.email,
