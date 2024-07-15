@@ -1,74 +1,74 @@
 
-    let actionUrl = '';
-    let actionData = {};
+let actionUrl = '';
+let actionData = {};
 
-    function getCsrfToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]').value;
-    }
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
 
-    function showModal(url, data, message) {
-        actionUrl = url;
-        actionData = data;
-        document.querySelector('#actionModal .modal-body').innerText = message;
-        const actionModal = new bootstrap.Modal(document.getElementById('actionModal'), {});
-        actionModal.show();
-    }
+function showModal(url, data, message) {
+    actionUrl = url;
+    actionData = data;
+    document.querySelector('#actionModal .modal-body').innerText = message;
+    const actionModal = new bootstrap.Modal(document.getElementById('actionModal'), {});
+    actionModal.show();
+}
 
-    document.getElementById('confirmActionButton').addEventListener('click', function() {
-        showBaseModal(true);
-        actionData['csrfmiddlewaretoken'] = getCsrfToken();
-        $.ajax({
-            type: 'POST',
-            url: actionUrl,
-            data: actionData,
-            success: function(response) {
-                alert(response.message);
-                showBaseModal(false);
-                location.reload();  // Reload the page to reflect changes
-            },
-            error: function(response) {
-                showModal(false);
-                alert('Error: ' + response.responseText);
-            }
-        });
+document.getElementById('confirmActionButton').addEventListener('click', function () {
+    showBaseModal(true);
+    actionData['csrfmiddlewaretoken'] = getCsrfToken();
+    $.ajax({
+        type: 'POST',
+        url: actionUrl,
+        data: actionData,
+        success: function (response) {
+            alert(response.message);
+            showBaseModal(false);
+            location.reload();  // Reload the page to reflect changes
+        },
+        error: function (response) {
+            showModal(false);
+            alert('Error: ' + response.responseText);
+        }
     });
+});
 
-    function resetPassword(userId) {
-        const resetPasswordUrl = '/users/reset-password/'; // Static URL
-        showModal(
-            resetPasswordUrl, 
-            {
-                'user_id': userId
-            }, 
-            'Are you sure you want to reset the password for this user?'
-        );
-    }
+function resetPassword(userId) {
+    const resetPasswordUrl = '/users/reset-password/'; // Static URL
+    showModal(
+        resetPasswordUrl,
+        {
+            'user_id': userId
+        },
+        'Are you sure you want to reset the password for this user?'
+    );
+}
 
-    function suspendUser(userId) {
-        const suspendUserUrl = '/users/suspend-user/'; // Static URL
-        showModal(
-            suspendUserUrl, 
-            {
-                'user_id': userId
-            }, 
-            'Are you sure you want to suspend this user?'
-        );
-    }
+function suspendUser(userId) {
+    const suspendUserUrl = '/users/suspend-user/'; // Static URL
+    showModal(
+        suspendUserUrl,
+        {
+            'user_id': userId
+        },
+        'Are you sure you want to suspend this user?'
+    );
+}
 
-    function activateUser(userId) {
-        const activateUserUrl = '/users/activate-user/'; // Static URL
-        showModal(
-            activateUserUrl, 
-            {
-                'user_id': userId
-            }, 
-            'Are you sure you want to activate this user?'
-        );
-    }
+function activateUser(userId) {
+    const activateUserUrl = '/users/activate-user/'; // Static URL
+    showModal(
+        activateUserUrl,
+        {
+            'user_id': userId
+        },
+        'Are you sure you want to activate this user?'
+    );
+}
 
 
 // Fetch data from thirdparty backend
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search-member');
     const suggestionsBox = document.createElement('div');
     suggestionsBox.classList.add('suggestions-box');
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let members = [];
 
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             const searchText = this.value;
             // Fetch member data from the server
             fetch('/accounts/member-search/', {
@@ -90,20 +90,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({ SearchText: searchText })
             })
-            .then(response => response.json())
-            .then(data => {
-                
-                if (data.isSuccess) {
-                    members = JSON.parse(data.result);  // Parse the JSON string
-                    filterSuggestions(searchText);
-                } else {
-                    console.error('Failed to fetch members:', data);
-                }
-               
-            })
-            .catch(error => {
-                console.error('Error fetching members:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.isSuccess) {
+                        members = JSON.parse(data.result);  // Parse the JSON string
+                        filterSuggestions(searchText);
+                    } else {
+                        console.error('Failed to fetch members:', data);
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Error fetching members:', error);
+                });
         });
     }
 
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const suggestionItem = document.createElement('div');
             suggestionItem.classList.add('suggestion-item');
             suggestionItem.textContent = `${member.MemberName} (${member.MemberNum})`;
-            suggestionItem.addEventListener('click', function() {
+            suggestionItem.addEventListener('click', function () {
                 fetchMemberLedger(member);
                 suggestionsBox.innerHTML = '';  // Clear suggestions
             });
@@ -152,21 +152,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 MembNum: member.MemberNum,
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.isSuccess) {
-                const ledgerData = JSON.parse(data.result);
-                fillFormWithMemberData(member);
-                displayAccountList(ledgerData);
-            } else {
-                console.error('Failed to fetch member ledger:', data);
-            }
-            showBaseModal(false);
-        })
-        .catch(error => {
-            console.error('Error fetching member ledger:', error);
-            showBaseModal(false);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.isSuccess) {
+                    const ledgerData = JSON.parse(data.result);
+                    console.log('Fetched accounts:', ledgerData);
+                    fillFormWithMemberData(member);
+                    displayAccountList(ledgerData);
+                } else {
+                    console.error('Failed to fetch member ledger:', data);
+                }
+                showBaseModal(false);
+            })
+            .catch(error => {
+                console.error('Error fetching member ledger:', error);
+                showBaseModal(false);
+            });
     }
 
     function fillFormWithMemberData(member) {
@@ -174,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('add-user-lastname').value = member.MemberName.split(' ').slice(1).join(' ');
         document.getElementById('add-user-email').value = member.Email || '';
         document.getElementById('add-user-contact').value = member.Mobile || '';
+        document.getElementById('add-user-member-number').value = member.MemberNum || '';
     }
 
     function displayAccountList(ledgerData) {
@@ -196,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fetch and display accounts when the form is opened for branch/member roles
     const offcanvasAddUser = document.getElementById('offcanvasAddUser');
-    offcanvasAddUser.addEventListener('shown.bs.offcanvas', function() {
+    offcanvasAddUser.addEventListener('shown.bs.offcanvas', function () {
         if (!searchInput) {
             fetchAccountDetails();
         }
@@ -211,24 +213,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                // Add any necessary data for fetching accounts
-                MembNum: 'example_member_num'
+
+                MembNum: member.MemberNum
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.isSuccess) {
-                const ledgerData = JSON.parse(data.result);
-                displayAccountList(ledgerData);
-            } else {
-                console.error('Failed to fetch accounts:', data);
-            }
-            showBaseModal(false);
-        })
-        .catch(error => {
-            console.error('Error fetching accounts:', error);
-            showBaseModal(false);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.isSuccess) {
+                    const ledgerData = JSON.parse(data.result);
+                    displayAccountList(ledgerData);
+                } else {
+                    console.error('Failed to fetch accounts:', data);
+                }
+                showBaseModal(false);
+            })
+            .catch(error => {
+                console.error('Error fetching accounts:', error);
+                showBaseModal(false);
+            });
+
+        showBaseModal(false);
     }
 });
 
@@ -237,8 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function showUserEditCanvas(userId) {
-
-    console.log(userId);
     fetch(`/users/get_user_info/${userId}/`)
         .then(response => response.json())
         .then(userData => {
@@ -252,16 +254,14 @@ function showUserEditCanvas(userId) {
                     document.getElementById('edit-username').value = userData.data.username || '';
                 }
                 document.getElementById('editUserForm').action = `/users/update-user/${userId}/`;
-                
-
-               
 
 
-
-
-
-                showBaseModal(true);
                 // Fetch external accounts
+
+
+                console.log('Fetching external accounts...');
+                console.log(userData.data);
+                showBaseModal(true);
                 fetch('/accounts/fetch-member-ledger/', {
                     method: 'POST',
                     headers: {
@@ -269,35 +269,35 @@ function showUserEditCanvas(userId) {
                         'X-CSRFToken': getCookie('csrftoken')
                     },
                     body: JSON.stringify({
-                        MembNum: userData.data.member_number // Ensure this key matches your payload
+                        MembNum: userData.data.member_number
                     })
                 })
-                .then(response => response.json())
-                .then(apiData => {
-                    showBaseModal(false);
-                    if (apiData.isSuccess) {
-                        // Show available accounts checkboxes
-                        const userAccounts = userData.data.available_accounts;
+                    .then(response => response.json())
+                    .then(apiData => {
+                        showBaseModal(false);
+                        if (apiData.isSuccess) {
+                            // Show available accounts checkboxes
+                            const userAccounts = userData.data.available_accounts;
 
-                        
-                        const ledgerData = JSON.parse(apiData.result);
-                        
-                        showAccountCheckbox(ledgerData, userAccounts);
-                    } else {
-                        document.getElementById('account-list-edit').innerHTML = `
+
+                            const ledgerData = JSON.parse(apiData.result);
+
+                            showAccountCheckbox(ledgerData, userAccounts);
+                        } else {
+                            document.getElementById('account-list-edit').innerHTML = `
                             <div class="alert alert-danger" role="alert">
                                 ${apiData.error}
                             </div>`;
-                    }
-                })
-                .catch(error => {
-                    showBaseModal(false);
-                    console.error('Error fetching external accounts:', error);
-                    document.getElementById('account-list-edit').innerHTML = `
+                        }
+                    })
+                    .catch(error => {
+                        showBaseModal(false);
+                        console.error('Error fetching external accounts:', error);
+                        document.getElementById('account-list-edit').innerHTML = `
                         <div class="alert alert-danger" role="alert">
                             Failed to retrieve data from external API
                         </div>`;
-                });
+                    });
 
                 // Show the offcanvas
                 const offcanvasElement = document.getElementById('offcanvasEditUser');
@@ -311,6 +311,7 @@ function showUserEditCanvas(userId) {
         .catch(error => {
             console.error('Error fetching user data:', error);
             alert('Error fetching user data: ' + error);
+            showBaseModal(true);
         });
 }
 
