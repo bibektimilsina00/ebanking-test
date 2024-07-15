@@ -67,12 +67,17 @@ class ResetPasswordView(LoginRequiredMixin, View):
             user.set_password(new_password)
             user.save()
             send_mail(
-                "Your password has been reset",
-                f"Your new password is: {new_password}",
-                "admin@yourdomain.com",
+                "Your Finman E-Banking Password Has Been Reset",
+                f"Dear {user.first_name} {user.last_name},\n\n"
+                "We wanted to inform you that your password has been successfully reset. "
+                "Below is your new password:\n\n"
+                f"Password: {new_password}\n\n"
+                "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
+                "If you have any questions or require further assistance, please do not hesitate to contact our support team.\n\n",
                 [user.email],
                 fail_silently=False,
             )
+
             return JsonResponse(
                 {"status": "success", "message": "Password reset and email sent."}
             )
@@ -154,12 +159,18 @@ class CreateUserView(View):
             new_user.full_clean()
             new_user.save()
             send_mail(
-                "Your account has been created",
-                f"Your password is: {new_password}",
-                "admin@yourdomain.com",
+                "Welcome to Finman E-Banking",
+                f"Dear {first_name} {last_name},\n\n"
+                "We are pleased to inform you that your account has been successfully created on Finman E-Banking. "
+                "Below are your account details:\n\n"
+                f"Username: {username}\n"
+                f"Password: {new_password}\n\n"
+                "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
+                "Thank you for choosing Finman E-Banking.\n\n",
                 [email],
                 fail_silently=False,
             )
+
         except (ValidationError, IntegrityError) as e:
             return JsonResponse({"status": "error", "message": str(e)})
 
@@ -179,13 +190,18 @@ class CreateUserView(View):
                 access_accounts=",".join(available_accounts),
             )
 
-        send_mail(
-            "Your account has been created",
-            f"Your password is: {new_password}",
-            "admin@yourdomain.com",
-            [new_user.email],
-            fail_silently=False,
-        )
+            send_mail(
+                "Welcome to Finman E-Banking",
+                f"Dear {first_name} {last_name},\n\n"
+                "We are pleased to inform you that your account has been successfully created on Finman E-Banking. "
+                "Below are your account details:\n\n"
+                f"Username: {username}\n"
+                f"Password: {new_password}\n\n"
+                "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
+                "Thank you for choosing Finman E-Banking.\n\n",
+                [email],
+                fail_silently=False,
+            )
         return redirect(reverse("user_list"))
 
 
