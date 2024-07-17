@@ -82,8 +82,8 @@ def member_ledger(request):
         api_url = f"{organization.base_url}MemberLedgerEbank"
         payload = {
             "clientId": organization.clint_id,
-            "Flag": "ALL",
-            "MembNum": memb_num,
+            "Flag": "ACTIVE",
+            "MembNum": str(memb_num),
             "username": organization.username,
         }
 
@@ -116,9 +116,13 @@ def fetch_member_ledger(request):
             return JsonResponse({"error": "Organization not found"}, status=404)
 
         api_url = f"{organization.base_url}MemberLedgerEbank"
+
+        print(
+            f'--------------------------> {json_data.get("MembNum") }<--------------------------'
+        )
         payload = {
             "clientId": organization.clint_id,
-            "Flag": "ALL",
+            "Flag": "ACTIVE",
             "MembNum": json_data.get("MembNum"),
             "username": organization.username,
         }

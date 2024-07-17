@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                MembNum: member.MemberNum,
+                MembNum: member.MemberId,
             })
         })
             .then(response => response.json())
@@ -279,7 +279,7 @@ function showUserEditCanvas(userId) {
                         'X-CSRFToken': getCookie('csrftoken')
                     },
                     body: JSON.stringify({
-                        MembNum: userData.data.member_number
+                        MembNum: userData.data.member_id
                     })
                 })
                     .then(response => response.json())

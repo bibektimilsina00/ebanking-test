@@ -144,7 +144,7 @@ class CreateUserView(View):
         last_name = request.POST.get("last_name")
         available_accounts = request.POST.getlist("accounts")
         username = request.POST.get("username")
-        member_number = request.POST.get("member-number")
+        member_number = request.POST.get("member_number")
 
         if request.user.role == "organization":
             role = "branch"
@@ -270,7 +270,7 @@ def get_user_info(request, user_id):
             "last_name": user.last_name,
             "address": user.address,
             "available_accounts": account_numbers,
-            "member_number": member_number,
+            "member_id": member_number,
         }
 
         return JsonResponse({"status": "success", "data": data})

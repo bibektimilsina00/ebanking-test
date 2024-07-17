@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function fetchMemberLedger(member) {
-        showBaseModal(true);
+
         fetch('/accounts/member-ledger/', {
             method: 'POST',
             headers: {
@@ -159,12 +159,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                MembNum: member.MemberNum,
+                MembNum: member.MemberID,
             })
         })
             .then(response => response.json())
             .then(data => {
                 if (data.isSuccess) {
+                    console.log(member);
+                    console.log('Fetched member ledger:', data.result);
                     const ledgerData = JSON.parse(data.result);
                     console.log('Fetched accounts:', ledgerData);
                     fillFormWithMemberData(member);
@@ -181,12 +183,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function fillFormWithMemberData(member) {
+
+        console.log(member);
+        // Display fields
+        document.getElementById('add-user-firstname-display').value = member.MemberName.split(' ')[0];
+        document.getElementById('add-user-lastname-display').value = member.MemberName.split(' ').slice(1).join(' ');
+        document.getElementById('add-user-email-display').value = member.Email || '';
+        document.getElementById('add-user-contact-display').value = member.Mobile || '';
+
+        // Hidden fields
         document.getElementById('add-user-firstname').value = member.MemberName.split(' ')[0];
         document.getElementById('add-user-lastname').value = member.MemberName.split(' ').slice(1).join(' ');
         document.getElementById('add-user-email').value = member.Email || '';
         document.getElementById('add-user-contact').value = member.Mobile || '';
-        document.getElementById('add-user-member-number').value = member.MemberNum || '';
+        document.getElementById('add-user-member-number').value = member.MemberID || '';
     }
+
 
     function displayAccountList(ledgerData) {
         const accountList = document.getElementById('account-list');
@@ -215,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function fetchAccountDetails() {
-        showBaseModal(true);
+
         fetch('/accounts/fetch-member-ledger/', {
             method: 'POST',
             headers: {
@@ -224,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({
 
-                MembNum: member.MemberNum
+                MembNum: member.MemberID
             })
         })
             .then(response => response.json())
@@ -266,12 +278,7 @@ function showUserEditCanvas(userId) {
                 document.getElementById('editUserForm').action = `/users/update-user/${userId}/`;
 
 
-                // Fetch external accounts
 
-
-                console.log('Fetching external accounts...');
-                console.log(userData.data);
-                showBaseModal(true);
                 fetch('/accounts/fetch-member-ledger/', {
                     method: 'POST',
                     headers: {
@@ -279,7 +286,7 @@ function showUserEditCanvas(userId) {
                         'X-CSRFToken': getCookie('csrftoken')
                     },
                     body: JSON.stringify({
-                        MembNum: userData.data.member_number
+                        MembNum: userData.data.member_id
                     })
                 })
                     .then(response => response.json())

@@ -30,184 +30,62 @@
                 <!-- Content -->
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <div class="row">
-                        <div class="col-lg-8 mb-4 order-0">
-                            {% if accounts %}
-                                {% for account in accounts %}
-
-                                <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
-                                    <div class="card mb-4">
-                                        <div class="d-flex align-items-center row">
-                                            <div class="col-sm-3 text-center">
-                                                <img src="{% static "assets/img/elements/account.png"%}"
-                                                    alt="User Avatar" class="img-fluid rounded-circle">
-                                            </div>
-                                            <div class="col-sm-9">
-                                                <div class="card-body">
-                                                    <h5 class="card-title text-primary"> {{ account.GroupName }}</h5>
-                                                    <p class="mb-2">
-                                                        <span class="fw-medium">Account Number:</span> {{ account.AccNum }}
-                                                    </p>
-                                                    <p class="mb-2">
-                                                        <span class="fw-medium">Account Balance:</span>
-                                                        <span id="balance-{{ forloop.counter }}" class="balance">xxxxx.xx</span>
-                                                        <i class="bx bx-show cursor-pointer" onclick="showBalance('{{ forloop.counter }}', {{ account.PBal }})"></i>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </a>
-                                {% endfor %}
-                            {% else %}
-                                <div class="card mb-4 text-center">
-                                    <div class="card-body">
-                                        <img src="{% static 'assets/img/illustrations/girl-doing-yoga-light.png' %}" alt="No Accounts" class="img-fluid mb-4" style="max-width: 200px;">
-                                        <h5 class="card-title text-primary">No Accounts Available</h5>
-                                        <p class="mb-4">You haven't added any accounts yet. Please add an account to get started.</p>
-                                        <a href="#" class="btn btn-primary">Add Account</a>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        
-<!--  
-                        <div class="col-lg-4 col-md-4 order-1">
+                        <div class="col-lg-12 mb-4 order-0">
                             <div class="row">
-                                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="{% static 'assets/img/icons/unicons/wallet-info.png' %}"
-                                                        alt="Total Credited" class="rounded" />
-                                                </div>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="cardOpt6"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="cardOpt6">
-                                                        <a class="dropdown-item" href="javascript:void(0);">View
-                                                            More</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                                {% if accounts %}
+                                    {% for account in accounts %}
+                                        <div class="col-md-6 col-sm-12">
+                                            <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
+                                                <div class="card mb-4">
+                                                    <div class="d-flex align-items-center row">
+                                                        <div class="col-12 col-sm-3 text-center">
+                                                            <img src="{% static "assets/img/elements/account.png" %}"
+                                                                alt="User Avatar" class="img-fluid rounded-circle">
+                                                        </div>
+                                                        <div class="col-12 col-sm-9">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title text-primary">{{ account.GroupName }}</h5>
+                                                                <p class="mb-2">
+                                                                    <span class="fw-medium">Account Number:</span> {{ account.AccNum }}
+                                                                </p>
+                                                                <p class="mb-2">
+                                                                    <span class="fw-medium">Account Balance:</span>
+                                                                    <span id="balance-{{ forloop.counter }}" class="balance">xxxxx.xx</span>
+                                                                    <i class="bx bx-show cursor-pointer" onclick="showBalance('{{ forloop.counter }}', {{ account.PBal }})"></i>
+                                                                </p>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="col-12">
+                                        <div class="card mb-4 text-center">
+                                            <div class="card-body">
+                                                <img src="{% static 'assets/img/illustrations/girl-doing-yoga-light.png' %}" alt="No Accounts" class="img-fluid mb-4" style="max-width: 200px;">
+                                                <h5 class="card-title text-primary">No Accounts Available</h5>
+                                                <p class="mb-4">You haven't added any accounts yet. Please add an account to get started.</p>
+                                                <a href="#" class="btn btn-primary">Add Account</a>
                                             </div>
-                                            <span>Total Credited</span>
-                                            <h3 class="card-title text-nowrap mb-1">45,679</h3>
-                                            
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="{% static 'assets/img/icons/unicons/chart.png' %}"
-                                                        alt="Total Debited" class="rounded" />
-                                                </div>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="cardOpt7"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="cardOpt7">
-                                                        <a class="dropdown-item" href="javascript:void(0);">View
-                                                            More</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <span>Total Debited</span>
-                                            <h3 class="card-title text-nowrap mb-1">30,235</h3>
-                                             
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="{% static 'assets/img/icons/unicons/chart-success.png' %}"
-                                                        alt="Total Transactions" class="rounded" />
-                                                </div>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="cardOpt3"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="cardOpt3">
-                                                        <a class="dropdown-item" href="javascript:void(0);">View
-                                                            More</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <span class="fw-medium d-block mb-1">Transactions</span>
-                                            <h3 class="card-title mb-2">1,234</h3>
-                                            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                                                +8.50%</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="{% static 'assets/img/icons/unicons/cc-primary.png' %}"
-                                                        alt="Total Accounts" class="rounded" />
-                                                </div>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="cardOpt8"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="cardOpt8">
-                                                        <a class="dropdown-item" href="javascript:void(0);">View
-                                                            More</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <span>Accounts</span>
-                                            <h3 class="card-title text-nowrap mb-1">{{accounts|length}}</h3>
-                                            {% comment %} <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                                                +12.75%</small> {% endcomment %}
-                                        </div>
-                                    </div>
-                                
-                                
-                                
-                                </div>
+                                {% endif %}
                             </div>
-                        </div>   
-
-
+                        </div>
                     </div>
                 </div>
-                -->
-                <!-- / Content -->
-
+            
                 <!-- Footer -->
                 {% block footer %}
                 {% include "widgets/footer.html" %}
                 {% endblock footer %}
                 <!-- / Footer -->
-
+            
                 <div class="content-backdrop fade"></div>
             </div>
+            
             <!-- Content wrapper -->
         </div>
         <!-- / Layout page -->
@@ -215,6 +93,11 @@
 
     <!-- Overlay -->
     <div class="layout-overlay layout-menu-toggle"></div>
+
+
+
+
+
 </div>
 <!-- / Layout wrapper -->
 
