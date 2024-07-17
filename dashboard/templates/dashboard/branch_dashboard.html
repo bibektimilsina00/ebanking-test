@@ -35,14 +35,18 @@
                                 {% if accounts %}
                                     {% for account in accounts %}
                                         <div class="col-md-6 col-sm-12">
-                                            <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
-                                                <div class="card mb-4">
-                                                    <div class="d-flex align-items-center row">
-                                                        <div class="col-12 col-sm-3 text-center">
+                                           
+                                                <div class="card mb-4 relative">
+                                                    <div class=" align-items-center row">
+                                                        <div class="col-sm-3 text-center" >
+                                                            <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
+
                                                             <img src="{% static "assets/img/elements/account.png" %}"
                                                                 alt="User Avatar" class="img-fluid rounded-circle">
-                                                        </div>
-                                                        <div class="col-12 col-sm-9">
+                                                            </a>
+
+                                                            </div>
+                                                        <div class=" col-sm-6" >
                                                             <div class="card-body">
                                                                 <h5 class="card-title text-primary">{{ account.GroupName }}</h5>
                                                                 <p class="mb-2">
@@ -54,10 +58,18 @@
                                                                     <i class="bx bx-show cursor-pointer" onclick="showBalance('{{ forloop.counter }}', {{ account.PBal }})"></i>
                                                                 </p>
                                                             </div>
+
                                                         </div>
+                                                        <div style="position:absolute; top:20px; right:20px; width:max-content">
+                                                            <a href="{% url "report" %}" class="menu-link avatar-initial rounded bg-label-primary p-2" >
+                                                                <i class=' bx bxs-report'></i>
+                                                                
+                                                            </a>
+                                                        </div>
+
                                                     </div>
                                                 </div>
-                                            </a>
+                                            
                                         </div>
                                     {% endfor %}
                                 {% else %}

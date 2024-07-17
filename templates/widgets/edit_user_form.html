@@ -9,11 +9,11 @@
 
             <div class="mb-3 fv-plugins-icon-container">
                 <label class="form-label" for="edit-user-firstname">First Name</label>
-                <input type="text" class="form-control" id="edit-user-firstname" placeholder="John" name="first_name" aria-label="John Doe" />
+                <input type="text" class="form-control" id="edit-user-firstname" placeholder="John" name="first_name" aria-label="John Doe" readonly style="background-color: #e9ecef;" />
             </div>
             <div class="mb-3 fv-plugins-icon-container">
                 <label class="form-label" for="edit-user-lastname">Last Name</label>
-                <input type="text" class="form-control" id="edit-user-lastname" placeholder="Doe" name="last_name" aria-label="John Doe" />
+                <input type="text" class="form-control" id="edit-user-lastname" placeholder="Doe" name="last_name" aria-label="John Doe" readonly style="background-color: #e9ecef;" />
             </div>
 
             {% if user.role == 'branch' %}
@@ -25,11 +25,11 @@
             {% endif %}
             <div class="mb-3 fv-plugins-icon-container">
                 <label class="form-label" for="edit-user-email">Email</label>
-                <input type="email" id="edit-user-email" class="form-control" placeholder="john.doe@example.com" aria-label="john.doe@example.com" name="email" />
+                <input type="email" id="edit-user-email" class="form-control" placeholder="john.doe@example.com" aria-label="john.doe@example.com" name="email" readonly style="background-color: #e9ecef;" />
             </div>
             <div class="mb-3">
                 <label class="form-label" for="edit-user-contact">Contact</label>
-                <input type="text" id="edit-user-contact" class="form-control phone-mask" placeholder="+1 (609) 988-44-11" aria-label="john.doe@example.com" name="contact" />
+                <input type="text" id="edit-user-contact" class="form-control phone-mask" placeholder="+1 (609) 988-44-11" aria-label="john.doe@example.com" name="contact" readonly style="background-color: #e9ecef;" />
             </div>
             <div id="account-section" class="mb-3">
                 <label class="form-label">Account List</label>

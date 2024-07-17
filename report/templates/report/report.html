@@ -54,7 +54,7 @@
                                         <input type="date" id="start_date" class="form-control" name="start_date" placeholder="From date">
                                         <input type="text" id="nepali_start_date" class="form-control d-none" placeholder="From date (BS)">
                                     </div>
-                            
+                                    
                                     <div class="col-md-3 user_status">
                                         <input type="date" id="end_date" class="form-control" name="end_date" placeholder="To date">
                                         <input type="text" id="nepali_end_date" class="form-control d-none" placeholder="To date (BS)">
@@ -184,261 +184,217 @@
 
 
 <script>
-document.getElementById('date_type').addEventListener('change', function() {
-    const dateType = this.value;
-    const startDateInput = document.getElementById('start_date');
-    const endDateInput = document.getElementById('end_date');
-    const nepaliStartDateInput = document.getElementById('nepali_start_date');
-    const nepaliEndDateInput = document.getElementById('nepali_end_date');
-
-    if (dateType === 'BS') {
-        startDateInput.classList.add('d-none');
-        endDateInput.classList.add('d-none');
-        nepaliStartDateInput.classList.remove('d-none');
-        nepaliEndDateInput.classList.remove('d-none');
-        $('#nepali_start_date').nepaliDatePicker({
-            ndpEnglishInput: 'start_date',
-            onChange: function() {
-                const startDate = $('#nepali_start_date').val();
-                const maxDate = NepaliFunctions.AddDays(startDate, 100);
-                $('#nepali_end_date').nepaliDatePicker('option', 'minDate', startDate);
-                $('#nepali_end_date').nepaliDatePicker('option', 'maxDate', maxDate);
-            }
-        });
-        $('#nepali_end_date').nepaliDatePicker({
-            ndpEnglishInput: 'end_date',
-            onChange: function() {
-                const endDate = $('#nepali_end_date').val();
-                const minDate = NepaliFunctions.SubtractDays(endDate, 100);
-                $('#nepali_start_date').nepaliDatePicker('option', 'maxDate', endDate);
-                $('#nepali_start_date').nepaliDatePicker('option', 'minDate', minDate);
-            }
-        });
-    } else {
-        startDateInput.classList.remove('d-none');
-        endDateInput.classList.remove('d-none');
-        nepaliStartDateInput.classList.add('d-none');
-        nepaliEndDateInput.classList.add('d-none');
-    }
-});
-
-document.getElementById('start_date').addEventListener('change', function() {
-    const startDate = new Date(this.value);
-    const endDateInput = document.getElementById('end_date');
-    const maxDate = new Date(startDate);
-    maxDate.setDate(maxDate.getDate() + 100);
+    document.getElementById('date_type').addEventListener('change', function() {
+        const dateType = this.value;
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        const nepaliStartDateInput = document.getElementById('nepali_start_date');
+        const nepaliEndDateInput = document.getElementById('nepali_end_date');
     
-    endDateInput.min = this.value;
-    endDateInput.max = maxDate.toISOString().split('T')[0];
-});
-
-document.getElementById('end_date').addEventListener('change', function() {
-    const endDate = new Date(this.value);
-    const startDateInput = document.getElementById('start_date');
-    const minDate = new Date(endDate);
-    minDate.setDate(minDate.getDate() - 100);
-    
-    startDateInput.max = this.value;
-    startDateInput.min = minDate.toISOString().split('T')[0];
-});
-
-$('#nepali_start_date').on('dateChange', function() {
-    const startDate = $('#nepali_start_date').val();
-    const maxDate = NepaliFunctions.AddDays(startDate, 100);
-    $('#nepali_end_date').nepaliDatePicker('option', 'minDate', startDate);
-    $('#nepali_end_date').nepaliDatePicker('option', 'maxDate', maxDate);
-});
-
-$('#nepali_end_date').on('dateChange', function() {
-    const endDate = $('#nepali_end_date').val();
-    const minDate = NepaliFunctions.SubtractDays(endDate, 100);
-    $('#nepali_start_date').nepaliDatePicker('option', 'maxDate', endDate);
-    $('#nepali_start_date').nepaliDatePicker('option', 'minDate', minDate);
-});
-
-document.getElementById('apply_filters').addEventListener('click', function() {
-    const dateType = document.getElementById('date_type').value;
-    let startDate = document.getElementById('start_date').value;
-    let endDate = document.getElementById('end_date').value;
-
-    if (dateType === 'BS') {
-        startDate = $('#nepali_start_date').val();
-        endDate = $('#nepali_end_date').val();
-        startDate = convertBSToAD(startDate);
-        endDate = convertBSToAD(endDate);
-    }
-
-    if (!validateDateRange(startDate, endDate)) {
-        alert('Date range should not exceed 100 days.');
-        return;
-    }
-
-    applyFilter(startDate, endDate);
-});
-
-function validateDateRange(startDate, endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 100;
-}
-
-
-
-
-var global_transactions = [];
-var global_startDate = '';
-var global_endDate = '';
-var global_account_number = '';
-var global_account_group = '';
-
-
-function handleAccountChange(selectElement) {
-    const selectedOption = selectElement.options[selectElement.selectedIndex];
-    const accountData = selectedOption.getAttribute('data-account');
-    const account = JSON.parse(accountData.replace(/'/g, '"'));
-    global_account_group = account.GroupName;
-    global_intrest_rate = account.IntRate;
-
-
-
-}
-
-
-
-function applyFilter(startDate, endDate) {
-    const ajaxUrl = document.getElementById('filterForm').dataset.ajaxUrl;
-    const account = document.getElementById('UserRole').value;
-    const form = document.getElementById('filterForm');
-    const formData = new FormData(form);
-    const initialMessage = document.getElementById('initialMessage');
-    const noResultsMessage = document.getElementById('noResultsMessage');
-    const tableBody = document.getElementById('transactionTableBody');
-    
-
-    showBaseModal(true);
-
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const transactions = data.transactions;
-        globalTransactions = transactions;
-        global_startDate = startDate;
-        global_endDate = endDate;
-        global_account_number = account;
-        tableBody.innerHTML = '';
-        if (transactions.length > 0) {
-            transactions.forEach(txn => {
-                const row = `
-                <tr>
-                    <td>${txn.BSDate}</td>
-                    <td>${txn.TxnDate}</td>
-                    <td>${txn.Particulars}</td>
-                    <td>${txn.ChequeNum}</td>
-                    <td>${txn.Debit}</td>
-                    <td>${txn.Credit}</td>
-                    <td>${txn.Balance}</td>
-                </tr>`;
-                tableBody.innerHTML += row;
+        if (dateType === 'BS') {
+            startDateInput.classList.add('d-none');
+            endDateInput.classList.add('d-none');
+            nepaliStartDateInput.classList.remove('d-none');
+            nepaliEndDateInput.classList.remove('d-none');
+            $('#nepali_start_date').nepaliDatePicker({
+                dateFormat: "%y-%m-%d",
+                closeOnDateSelect: true,
+                onChange: function() {
+                    const startDate = $('#nepali_start_date').val();
+                    $('#nepali_end_date').nepaliDatePicker('option', 'minDate', startDate);
+                }
             });
-            initialMessage.style.display = 'none';
-            noResultsMessage.style.display = 'none';
+            $('#nepali_end_date').nepaliDatePicker({
+                dateFormat: "%y-%m-%d",
+                closeOnDateSelect: true,
+                onChange: function() {
+                    const endDate = $('#nepali_end_date').val();
+                    $('#nepali_start_date').nepaliDatePicker('option', 'maxDate', endDate);
+                }
+            });
         } else {
-            noResultsMessage.style.display = 'block';
-            initialMessage.style.display = 'none';
+            startDateInput.classList.remove('d-none');
+            endDateInput.classList.remove('d-none');
+            nepaliStartDateInput.classList.add('d-none');
+            nepaliEndDateInput.classList.add('d-none');
         }
-
-        showBaseModal(false);
-
-
-        
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showBaseModal(false);
-        alert('Error fetching data: ' + error.message);
     });
     
-
-    showBaseModal(false);
-}
-
-function convertADtoBS(date) {
-    // This is a simplified approximation and may not be accurate for all dates.
-    const adDate = new Date(date);
-    const bsOffsetYears = 56;
-    const bsOffsetMonths = 8;
-    const bsOffsetDays = 15;
-
-    // Calculate approximate BS date
-    let bsYear = adDate.getFullYear() + bsOffsetYears;
-    let bsMonth = adDate.getMonth() + bsOffsetMonths + 1; // JavaScript months are 0-indexed
-    let bsDay = adDate.getDate() + bsOffsetDays;
-
-    // Adjust for overflow of days in months
-    const daysInMonth = [31, (bsYear % 4 === 0 && bsYear % 100 !== 0) || bsYear % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    while (bsDay > daysInMonth[bsMonth - 1]) {
-        bsDay -= daysInMonth[bsMonth - 1];
-        bsMonth++;
-        if (bsMonth > 12) {
-            bsMonth = 1;
-            bsYear++;
-        }
-    }
-
-    return `${bsYear}-${bsMonth.toString().padStart(2, '0')}-${bsDay.toString().padStart(2, '0')}`;
-}
-
-function exportTable(type) {
-
-
-    const csrfToken = "{{ csrf_token }}"; 
-    fetch('/report/export/', {
-        method: 'POST',
-        body: JSON.stringify({
-            transactions: globalTransactions,
-            start_date: global_startDate,
-            end_date: global_endDate,
-            account_number: global_account_number,
-            type: type,
-            account_group: global_account_group,
-            intrest_rate: global_intrest_rate, 
-        }),
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        }
-    })
-    .then(response => response.blob()) 
-    .then(blob => {
-        // Handling file download.
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        // the filename you want
-        a.download = 'report.' + type;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        alert('Your file has been downloaded!'); // or handle other UI changes
-    })
-    .catch(error => {
-        console.error('Error:', error);
+    
+    document.getElementById('start_date').addEventListener('change', function() {
+        const startDate = new Date(this.value);
+        const endDateInput = document.getElementById('end_date');
+        const maxDate = new Date(startDate);
+        maxDate.setDate(maxDate.getDate() + 100);
+        
+        endDateInput.min = this.value;
+        endDateInput.max = maxDate.toISOString().split('T')[0];
     });
-}
-
-
-function printTable() {
-    window.print();
-}
-</script>
+    
+    document.getElementById('end_date').addEventListener('change', function() {
+        const endDate = new Date(this.value);
+        const startDateInput = document.getElementById('start_date');
+        const minDate = new Date(endDate);
+        minDate.setDate(minDate.getDate() - 100);
+        
+        startDateInput.max = this.value;
+        startDateInput.min = minDate.toISOString().split('T')[0];
+    });
+    
+    $('#nepali_start_date').on('dateChange', function() {
+        const startDate = $('#nepali_start_date').val();
+        const maxDate = NepaliFunctions.AddDays(startDate, 100);
+        $('#nepali_end_date').nepaliDatePicker('option', 'minDate', startDate);
+        $('#nepali_end_date').nepaliDatePicker('option', 'maxDate', maxDate);
+    });
+    
+    $('#nepali_end_date').on('dateChange', function() {
+        const endDate = $('#nepali_end_date').val();
+        const minDate = NepaliFunctions.SubtractDays(endDate, 100);
+        $('#nepali_start_date').nepaliDatePicker('option', 'maxDate', endDate);
+        $('#nepali_start_date').nepaliDatePicker('option', 'minDate', minDate);
+    });
+    
+    document.getElementById('apply_filters').addEventListener('click', function() {
+        const dateType = document.getElementById('date_type').value;
+        let startDate = document.getElementById('start_date').value;
+        let endDate = document.getElementById('end_date').value;
+    
+        if (dateType === 'BS') {
+            
+            date_field1=document.getElementById('nepali_start_date');
+            date_field2=document.getElementById('nepali_end_date');
+            startDate = date_field1.value;
+            endDate = date_field2.value;
+            
+        }
+    
+        console.log(`Start Date: ${startDate}, End Date: ${endDate}`); 
+    
+        if (!validateDateRange(startDate, endDate)) {
+            alert('Date range should not exceed 100 days.');
+            return;
+        }
+    
+        applyFilter(startDate, endDate, dateType);
+    });
+    
+    function validateDateRange(startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return true;
+    }
+    
+    var global_transactions = [];
+    var global_startDate = '';
+    var global_endDate = '';
+    var global_account_number = '';
+    var global_account_group = '';
+    
+    function handleAccountChange(selectElement) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const accountData = selectedOption.getAttribute('data-account');
+        const account = JSON.parse(accountData.replace(/'/g, '"'));
+        global_account_group = account.GroupName;
+        global_intrest_rate = account.IntRate;
+    }
+    
+    function applyFilter(startDate, endDate, dateType) {
+        const form = document.getElementById('filterForm');
+        const formData = new FormData(form);
+        formData.append('start_date', startDate);
+        formData.append('end_date', endDate);
+        formData.append('date_type', dateType);
+        
+        const tableBody = document.getElementById('transactionTableBody');
+        const initialMessage = document.getElementById('initialMessage');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        const account = document.getElementById('UserRole').value;
+    
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const transactions = data.transactions;
+            global_transactions = transactions;
+            global_startDate = startDate;
+            global_endDate = endDate;
+            global_account_number = account;
+            tableBody.innerHTML = '';
+            if (transactions.length > 0) {
+                transactions.forEach(txn => {
+                    const row = `
+                    <tr>
+                        <td>${txn.BSDate}</td>
+                        <td>${txn.TxnDate}</td>
+                        <td>${txn.Particulars}</td>
+                        <td>${txn.ChequeNum}</td>
+                        <td>${txn.Debit}</td>
+                        <td>${txn.Credit}</td>
+                        <td>${txn.Balance}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+                initialMessage.style.display = 'none';
+                noResultsMessage.style.display = 'none';
+            } else {
+                noResultsMessage.style.display = 'block';
+                initialMessage.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error fetching data: ' + error.message);
+        });
+    }
+    
+    function exportTable(type) {
+        const csrfToken = "{{ csrf_token }}"; 
+        fetch('/report/export/', {
+            method: 'POST',
+            body: JSON.stringify({
+                transactions: global_transactions,
+                start_date: global_startDate,
+                end_date: global_endDate,
+                account_number: global_account_number,
+                type: type,
+                account_group: global_account_group,
+                intrest_rate: global_intrest_rate, 
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'report.' + type;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            alert('Your file has been downloaded!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    
+    function printTable() {
+        window.print();
+    }
+    
+    </script>
+    
+    
 {% endblock extra_js %}

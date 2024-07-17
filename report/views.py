@@ -1,5 +1,6 @@
 # report/views.py
 import csv
+from nepali_datetime import date as NepaliDate
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
@@ -23,43 +24,35 @@ class ReportView(View):
     template_name = "report/report.html"
 
     def get_context_data(self, **kwargs):
+        total_balance = 0
         context = {}
 
-        if self.request.user.role == "branch":
-            try:
-                branch = Branch.objects.get(owner=self.request.user)
-                organization = branch.organization
-            except Branch.DoesNotExist:
-                context["error"] = "Branch not found"
-                return context
-            except Organization.DoesNotExist:
-                context["error"] = "Organization not found"
-                return context
-
-            context["accounts"] = self.fetch_member_ledger(
-                organization, branch.member_number
-            )
-
+        try:
+            branch = Branch.objects.get(owner=self.request.user)
+            organization = branch.organization
+        except Branch.DoesNotExist:
+            context["error"] = "Branch not found"
             return context
-
-        if self.request.user.role == "staff":
-            try:
-                branch = Branch.objects.get(staff_members__user=self.request.user)
-                organization = branch.organization
-                staff = Staff.objects.get(user=self.request.user)
-                access_accounts = set(
-                    staff.access_accounts.split(",")
-                )  # Ensure unique accounts
-            except Branch.DoesNotExist:
-                context["accounts"] = []
-                return context
-
-            all_accounts = self.fetch_member_ledger(organization, branch.member_number)
-            filtered_accounts = [
-                acc for acc in all_accounts if acc["AccNum"] in access_accounts
-            ]
-            context["accounts"] = filtered_accounts
+        except Organization.DoesNotExist:
+            context["error"] = "Organization not found"
             return context
+        access_accounts = set(branch.available_accounts.split(","))
+        all_accounts = self.fetch_member_ledger(organization, branch.member_number)
+        filtered_accounts = [
+            acc for acc in all_accounts if acc["AccNum"] in access_accounts
+        ]
+
+        context["accounts"] = filtered_accounts
+        total_balance = sum(
+            account["PBal"] for account in context["accounts"] if "PBal" in account
+        )
+
+        # all user created by the current user and whole role is staff
+        all_staff = Staff.objects.filter(branch__owner=self.request.user)
+        context["all_staff"] = all_staff
+        context["total_balance"] = total_balance
+
+        return context
 
     def fetch_member_ledger(self, organization, member_number):
         api_url = f"{organization.base_url}MemberLedgerEbank"
@@ -104,8 +97,12 @@ class ReportView(View):
         account_number = request.POST.get("account")
         start_date_str = request.POST.get("start_date")
         end_date_str = request.POST.get("end_date")
+        date_type = request.POST.get("date_type")
         client_id = organization.clint_id
         username = organization.username
+        if date_type == "BS":
+            start_date_str = self.convert_bs_to_ad(start_date_str)
+            end_date_str = self.convert_bs_to_ad(end_date_str)
         payload = {
             "AccNum": account_number,
             "EndDate": end_date_str,
@@ -113,7 +110,7 @@ class ReportView(View):
             "clientId": client_id,
             "username": username,
         }
-
+        print(request.POST)
         api_url = f"{organization.base_url}SavingLedgerEbank"
         try:
             response = requests.post(api_url, json=payload)
@@ -126,6 +123,13 @@ class ReportView(View):
 
         context.update({"transactions": transactions})
         return JsonResponse({"transactions": list(transactions)})
+
+    def convert_bs_to_ad(self, bs_date_str):
+        # Assuming the bs_date_str format is 'YYYY-MM-DD' in Nepali date.
+        year, month, day = map(int, bs_date_str.split("-"))
+        nepali_date = NepaliDate(year, month, day)
+        ad_date = nepali_date.to_datetime_date()
+        return ad_date.strftime("%Y-%m-%d")
 
 
 @login_required
