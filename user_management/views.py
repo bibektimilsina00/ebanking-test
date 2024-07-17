@@ -71,6 +71,7 @@ class ResetPasswordView(LoginRequiredMixin, View):
             user = CustomUser.objects.get(id=user_id)
             new_password = get_random_string(length=8)
             user.set_password(new_password)
+            user.password_changed = False
             user.save()
             send_mail(
                 "Your E-Banking Password Has Been Reset",
