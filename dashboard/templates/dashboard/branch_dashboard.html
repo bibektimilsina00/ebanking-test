@@ -35,7 +35,6 @@
                                 {% if accounts %}
                                     {% for account in accounts %}
                                         <div class="col-md-6 col-sm-12">
-                                           
                                                 <div class="card mb-4 relative">
                                                     <div class=" align-items-center row">
                                                         <div class="col-sm-3 text-center" >
@@ -47,6 +46,8 @@
 
                                                             </div>
                                                         <div class=" col-sm-6" >
+
+                                                            <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
                                                             <div class="card-body">
                                                                 <h5 class="card-title text-primary">{{ account.GroupName }}</h5>
                                                                 <p class="mb-2">
@@ -54,14 +55,15 @@
                                                                 </p>
                                                                 <p class="mb-2">
                                                                     <span class="fw-medium">Account Balance:</span>
-                                                                    <span id="balance-{{ forloop.counter }}" class="balance">xxxxx.xx</span>
-                                                                    <i class="bx bx-show cursor-pointer" onclick="showBalance('{{ forloop.counter }}', {{ account.PBal }})"></i>
+                                                                    <span id="balance-{{ forloop.counter }}" class="balance">{{ account.PBal }}</span>
+                                                
                                                                 </p>
                                                             </div>
+                                                        </a>
 
                                                         </div>
                                                         <div style="position:absolute; top:20px; right:20px; width:max-content">
-                                                            <a href="{% url "report" %}" class="menu-link avatar-initial rounded bg-label-primary p-2" >
+                                                            <a href="{% url 'report' %}?account={{ account.AccNum }}" class="menu-link avatar-initial rounded bg-label-primary p-2" >
                                                                 <i class=' bx bxs-report'></i>
                                                                 
                                                             </a>

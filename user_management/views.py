@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.forms import ValidationError
@@ -60,7 +61,8 @@ class UserListView(LoginRequiredMixin, TemplateView):
 
 class ResetPasswordView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        user_id = request.POST.get("user_id")
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data.get("user_id")
 
         org_user = CustomUser.objects.filter(role="organization")
         org_data = org_user.first()
@@ -97,7 +99,8 @@ class ResetPasswordView(LoginRequiredMixin, View):
 
 class SuspendUserView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        user_id = request.POST.get("user_id")
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data.get("user_id")
         try:
             user = CustomUser.objects.get(id=user_id)
             user.is_active = False
@@ -111,7 +114,8 @@ class SuspendUserView(LoginRequiredMixin, View):
 
 class ActivateUserView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        user_id = request.POST.get("user_id")
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data.get("user_id")
         try:
             user = CustomUser.objects.get(id=user_id)
             user.is_active = True
@@ -123,10 +127,14 @@ class ActivateUserView(LoginRequiredMixin, View):
             return HttpResponseBadRequest("User does not exist")
 
 
-class DeleteUserView(LoginRequiredMixin, View):
+class DeleteUserView(View):
     def post(self, request, *args, **kwargs):
-        user_id = request.POST.get("user_id")
         try:
+            data = json.loads(request.body.decode("utf-8"))
+            user_id = data.get("user_id")
+            if not user_id:
+                return HttpResponseBadRequest("User ID is required.")
+
             user = CustomUser.objects.get(id=user_id)
             user.delete()
             return JsonResponse(
@@ -134,38 +142,44 @@ class DeleteUserView(LoginRequiredMixin, View):
             )
         except CustomUser.DoesNotExist:
             return HttpResponseBadRequest("User does not exist")
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON")
+        except Exception as e:
+            return HttpResponseBadRequest(f"An error occurred: {str(e)}")
 
 
 class CreateUserView(View):
     def post(self, request, *args, **kwargs):
-        email = request.POST.get("email")
-        contact = request.POST.get("contact")
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        available_accounts = request.POST.getlist("accounts")
-        username = request.POST.get("username")
-        member_number = request.POST.get("member_number")
 
-        if request.user.role == "organization":
-            role = "branch"
-        elif request.user.role == "branch":
-            role = "staff"
-        else:
-            messages.error(request, "You are not authorized to create users.")
-            return redirect("user_list")
-
-        new_password = get_random_string(length=8)
-
-        new_user = CustomUser(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=contact,
-            role=role,
-            username=username,
-        )
-        new_user.set_password(new_password)
         try:
+            email = request.POST.get("email")
+            contact = request.POST.get("contact")
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+
+            available_accounts = request.POST.getlist("accounts")
+            username = request.POST.get("username")
+            member_number = request.POST.get("member_number")
+            print(last_name)
+            if request.user.role == "organization":
+                role = "branch"
+            elif request.user.role == "branch":
+                role = "staff"
+            else:
+                messages.error(request, "You are not authorized to create users.")
+                return redirect("user_list")
+
+            new_password = get_random_string(length=8)
+
+            new_user = CustomUser(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=contact,
+                role=role,
+                username=username,
+            )
+            new_user.set_password(new_password)
             org_user = CustomUser.objects.filter(role="organization")
             org_data = org_user.first()
             new_user.full_clean()
@@ -189,47 +203,61 @@ class CreateUserView(View):
                 fail_silently=False,
             )
 
-        except (ValidationError, IntegrityError) as e:
-            return JsonResponse({"status": "error", "message": str(e)})
+            if request.user.role == "organization":
+                Branch.objects.create(
+                    name=f"{first_name} {last_name}'s Branch",
+                    organization=Organization.objects.get(owner=request.user),
+                    created_by=request.user,
+                    available_accounts=",".join(available_accounts),
+                    owner=new_user,
+                    member_number=member_number,
+                )
+            elif request.user.role == "branch":
+                Staff.objects.create(
+                    user=new_user,
+                    branch=Branch.objects.get(owner=request.user),
+                    access_accounts=",".join(available_accounts),
+                )
+                org_user = CustomUser.objects.filter(role="organization")
+                org_data = org_user.first()
 
-        if request.user.role == "organization":
-            Branch.objects.create(
-                name=f"{first_name} {last_name}'s Branch",
-                organization=Organization.objects.get(owner=request.user),
-                created_by=request.user,
-                available_accounts=",".join(available_accounts),
-                owner=new_user,
-                member_number=member_number,
-            )
-        elif request.user.role == "branch":
-            Staff.objects.create(
-                user=new_user,
-                branch=Branch.objects.get(owner=request.user),
-                access_accounts=",".join(available_accounts),
-            )
-            org_user = CustomUser.objects.filter(role="organization")
-            org_data = org_user.first()
+                send_mail(
+                    "Welcome to E-Banking",
+                    f"Dear {first_name} {last_name},\n\n"
+                    "We are pleased to inform you that your account has been successfully created on E-Banking. "
+                    "Below are your account details:\n\n"
+                    f"Username: {username}\n"
+                    f"Password: {new_password}\n\n"
+                    "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
+                    "If you have any questions or require further assistance, please do not hesitate to contact us at:\n"
+                    f"Phone: {org_data.phone}\n"
+                    f"Email: {org_data.email}\n\n"
+                    "Thank you for choosing E-Banking.\n\n"
+                    "Best regards,\n"
+                    "The E-Banking Team",
+                    from_email=org_data.email,
+                    recipient_list=[new_user.email],
+                    fail_silently=False,
+                )
 
-            send_mail(
-                "Welcome to E-Banking",
-                f"Dear {first_name} {last_name},\n\n"
-                "We are pleased to inform you that your account has been successfully created on E-Banking. "
-                "Below are your account details:\n\n"
-                f"Username: {username}\n"
-                f"Password: {new_password}\n\n"
-                "For your security, please log in to your account at your earliest convenience and change your password.\n\n"
-                "If you have any questions or require further assistance, please do not hesitate to contact us at:\n"
-                f"Phone: {org_data.phone}\n"
-                f"Email: {org_data.email}\n\n"
-                "Thank you for choosing E-Banking.\n\n"
-                "Best regards,\n"
-                "The E-Banking Team",
-                from_email=org_data.email,
-                recipient_list=[new_user.email],
-                fail_silently=False,
+            return JsonResponse(
+                {"status": "success", "message": "User created successfully."}
             )
 
-        return redirect(reverse("user_list"))
+        except ValidationError as e:
+            errors = {field: error[0] for field, error in e.message_dict.items()}
+
+            print("Error:", errors)
+            return JsonResponse({"status": "error", "errors": errors}, status=400)
+
+        except:
+            print("Error:")
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "An error occurred while creating the user",
+                }
+            )
 
 
 from django.contrib.auth.decorators import login_required
@@ -239,13 +267,14 @@ from django.contrib.auth.decorators import login_required
 def get_user_info(request, user_id):
     try:
         user = CustomUser.objects.get(pk=user_id)
-
         account_numbers = []
         member_number = None
-        branches = user.branches.all()
-
+        branches = None
+        if request.user.role == "organization":
+            branches = Branch.objects.filter(owner=user)
+        if request.user.role == "branch":
+            branches = Branch.objects.filter(owner=request.user)
         member_number = branches[0].member_number
-
         if user.role == "branch":
             branches = user.branches.all().values("available_accounts")
             account_numbers = [
@@ -254,7 +283,6 @@ def get_user_info(request, user_id):
                 for account in branch["available_accounts"].split(",")
                 if branch["available_accounts"]
             ]
-
         elif user.role == "staff":
             staff_profile = user.staff_profile
             if staff_profile and staff_profile.access_accounts:
@@ -262,6 +290,7 @@ def get_user_info(request, user_id):
                     account.strip()
                     for account in staff_profile.access_accounts.split(",")
                 ]
+
         data = {
             "email": user.email,
             "phone": user.phone,
@@ -273,7 +302,13 @@ def get_user_info(request, user_id):
             "member_id": member_number,
         }
 
-        return JsonResponse({"status": "success", "data": data})
+        return JsonResponse(
+            {
+                "status": "success",
+                "data": data,
+            }
+        )
+
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"status": "error", "message": "User not found"}, status=404
@@ -284,8 +319,6 @@ def get_user_info(request, user_id):
 @require_POST
 def update_user(request, user_id):
 
-    print(user_id)
-    # Attempt to retrieve the user from the database.
     try:
         user = CustomUser.objects.get(pk=user_id)
     except CustomUser.DoesNotExist:
@@ -315,8 +348,6 @@ def update_user(request, user_id):
 
     # Update role-specific information.
     accounts = request.POST.getlist("accounts")  # Fetch the list of accounts
-
-    print(accounts)
 
     if user.role == "branch":
         # Update all branches associated with this user.

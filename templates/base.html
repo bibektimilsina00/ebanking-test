@@ -47,7 +47,37 @@
     <!-- Extra CSS -->
    {% block extra_css %}
     {% endblock extra_css %}
+{% block css_for_checkbox %}
+<style>
+#account-list-edit > .border {
+    border-color: #007bff; /* Bootstrap primary color, adjust as needed */
+    background-color: #f8f9fa; /* Light background for better readability */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+}
 
+ 
+
+.list-group-item-action:hover, .list-group-item-action:focus {
+    background-color: #f8f9fa; // Light grey background on hover/focus
+    cursor: pointer; // Change cursor to indicate clickability
+}
+
+
+.suggestion-item {
+    cursor: pointer;
+    padding: 10px 15px; /* Spacing inside each suggestion */
+    border-bottom: 1px solid #f1f1f1; /* Light line between items */
+}
+
+.suggestion-item:last-child {
+    border-bottom: none; /* Remove bottom border for the last item */
+}
+
+.suggestion-item:hover {
+    background-color: #ffe5e5; /* Light grey background on hover */
+}
+</style>
+{% endblock css_for_checkbox %}
     <!-- Helpers -->
     <script  src=" {% static "assets/vendor/js/helpers.js" %}">
     </script>
@@ -178,7 +208,7 @@
         // Define the modal instance outside the function to maintain its state across calls
         let baseModalInstance = null; // This will hold the modal instance
     
-        function showBaseModal(show = true) {
+        function showBaseModal(show = false) {
             if (!baseModalInstance) {
                 // Only create the modal instance if it doesn't already exist
                 baseModalInstance = new bootstrap.Modal(document.getElementById('baseModal'), {

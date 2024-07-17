@@ -24,8 +24,11 @@ class ReportView(View):
     template_name = "report/report.html"
 
     def get_context_data(self, **kwargs):
-        total_balance = 0
         context = {}
+        total_balance = 0
+        account_number = self.request.GET.get("account", None)
+
+        context["selected_account_number"] = account_number
 
         try:
             branch = Branch.objects.get(owner=self.request.user)

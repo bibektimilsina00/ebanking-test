@@ -8,6 +8,9 @@ from branches.models import Branch
 from django.http import JsonResponse
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 from django.views.generic import TemplateView
@@ -104,43 +107,57 @@ def member_ledger(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
+@login_required
 @csrf_exempt
 def fetch_member_ledger(request):
-    if request.method == "POST":
-        json_data = json.loads(request.body)
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request"}, status=400)
 
-        try:
+    try:
+        if request.user.role == "branch":
+            branch = Branch.objects.get(owner=request.user)
+            organization = branch.organization
+            member_number = branch.member_number
+        else:
             organization = Organization.objects.get(owner=request.user)
+            member_number = json.loads(request.body.decode("utf-8")).get("MembNum")
 
-        except Organization.DoesNotExist:
-            return JsonResponse({"error": "Organization not found"}, status=404)
+    except (Organization.DoesNotExist, Branch.DoesNotExist):
+        return JsonResponse({"error": "Organization or Branch not found"}, status=404)
 
-        api_url = f"{organization.base_url}MemberLedgerEbank"
+    api_url = f"{organization.base_url}MemberLedgerEbank"
+    payload = {
+        "clientId": organization.clint_id,
+        "Flag": "ACTIVE",
+        "MembNum": member_number,
+        "username": organization.username,
+    }
 
-        print(
-            f'--------------------------> {json_data.get("MembNum") }<--------------------------'
-        )
-        payload = {
-            "clientId": organization.clint_id,
-            "Flag": "ACTIVE",
-            "MembNum": json_data.get("MembNum"),
-            "username": organization.username,
-        }
+    try:
+        response = requests.post(api_url, json=payload)
 
-        try:
-            response = requests.post(api_url, json=payload)
-            response_data = response.json()
-            if response.status_code == 200 and response_data.get("isSuccess"):
-                return JsonResponse(response_data)
-            else:
-                return JsonResponse(
-                    {"error": "Failed to fetch data from external API"},
-                    status=response.status_code,
-                )
-        except requests.RequestException as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        parsed_data = json.loads(response.text)
+        result = parsed_data.get("result")
+        if result.startswith("'") and result.endswith("'"):
+            result = result[1:-1]
+        parsed_data = json.loads(result)
 
-    return JsonResponse({"error": "Invalid request"}, status=400)
+        if request.user.role == "branch":
+            accessible_accounts = set(branch.available_accounts.split(","))
+            filtered_accounts = [
+                account
+                for account in parsed_data
+                if account.get("AccNum") in accessible_accounts
+            ]
+
+            parsed_data = filtered_accounts
+
+        return JsonResponse({"isSuccess": True, "result": parsed_data})
+
+    except requests.RequestException as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    except json.JSONDecodeError as e:
+        return JsonResponse({"error": "JSON decoding error: " + str(e)}, status=500)
 
 
 from django.views.generic import TemplateView
