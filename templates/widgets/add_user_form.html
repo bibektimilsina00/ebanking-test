@@ -17,13 +17,13 @@
         
             <div class="mb-3 fv-plugins-icon-container">
                 <label class="form-label" for="add-user-firstname-display">First Name</label>
-                <input type="text" class="form-control" id="add-user-firstname-display" placeholder="John" name="first_name_display" aria-label="John Doe" disabled {% if user.role == "organization" %}style="background-color: #e9ecef;"{% endif %} />
+                <input type="text" class="form-control" id="add-user-firstname-display" placeholder="John" name="first_name_display" aria-label="John Doe"  {% if user.role == "organization" %}style="background-color: #e9ecef;"  disabled{% endif %} />
                 <input type="hidden" id="add-user-firstname" name="first_name" />
             </div>
         
             <div class="mb-3 fv-plugins-icon-container">
                 <label class="form-label" for="add-user-lastname-display">Last Name</label>
-                <input type="text" class="form-control" id="add-user-lastname-display" placeholder="Doe" name="last_name_display" aria-label="John Doe" disabled {% if user.role == "organization" %}style="background-color: #e9ecef;"{% endif %} />
+                <input type="text" class="form-control" id="add-user-lastname-display" placeholder="Doe" name="last_name_display" aria-label="John Doe"   {% if user.role == "organization" %}style="background-color: #e9ecef;" disabled{% endif %} />
                 <input type="hidden" id="add-user-lastname" name="last_name" />
             </div>
         
@@ -36,13 +36,13 @@
         
             <div class="mb-3 fv-plugins-icon-container">
                 <label class="form-label" for="add-user-email-display">Email</label>
-                <input type="email" id="add-user-email-display" class="form-control" placeholder="john.doe@example.com" aria-label="john.doe@example.com" name="email_display" disabled {% if user.role == "organization" %}style="background-color: #e9ecef;"{% endif %} />
+                <input type="email" id="add-user-email-display" class="form-control" placeholder="john.doe@example.com" aria-label="john.doe@example.com" name="email_display"   {% if user.role == "organization" %}style="background-color: #e9ecef;"disabled{% endif %} />
                 <input type="hidden" id="add-user-email" name="email" />
             </div>
         
             <div class="mb-3">
                 <label class="form-label" for="add-user-contact-display">Contact</label>
-                <input type="text" id="add-user-contact-display" class="form-control phone-mask" placeholder="+1 (609) 988-44-11" aria-label="john.doe@example.com" name="contact_display" disabled {% if user.role == "organization" %}style="background-color: #e9ecef;"{% endif %} />
+                <input type="text" id="add-user-contact-display" class="form-control phone-mask" placeholder="+1 (609) 988-44-11" aria-label="john.doe@example.com" name="contact_display"   {% if user.role == "organization" %}style="background-color: #e9ecef;"disabled{% endif %} />
                 <input type="hidden" id="add-user-contact" name="contact" />
             </div>
         
