@@ -37,7 +37,7 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./config/nginx:/etc/nginx/conf.d
       - static_volume:/app/staticfiles  # This should match the alias in Nginx configuration
