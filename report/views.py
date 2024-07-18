@@ -29,31 +29,40 @@ class ReportView(View):
         account_number = self.request.GET.get("account", None)
 
         context["selected_account_number"] = account_number
-
-        try:
-            branch = Branch.objects.get(owner=self.request.user)
+        accounts = []
+        if self.request.user.role == "staff":
+            branch = Branch.objects.get(staff_members__user=self.request.user)
             organization = branch.organization
-        except Branch.DoesNotExist:
-            context["error"] = "Branch not found"
-            return context
-        except Organization.DoesNotExist:
-            context["error"] = "Organization not found"
-            return context
-        access_accounts = set(branch.available_accounts.split(","))
-        all_accounts = self.fetch_member_ledger(organization, branch.member_number)
-        filtered_accounts = [
-            acc for acc in all_accounts if acc["AccNum"] in access_accounts
-        ]
+            staff = Staff.objects.get(user=self.request.user)
+            access_accounts = set(staff.access_accounts.split(","))
 
-        context["accounts"] = filtered_accounts
-        total_balance = sum(
-            account["PBal"] for account in context["accounts"] if "PBal" in account
-        )
+            all_accounts = self.fetch_member_ledger(organization, branch.member_number)
+            filtered_accounts = [
+                acc for acc in all_accounts if acc["AccNum"] in access_accounts
+            ]
+            accounts = filtered_accounts
+        if self.request.user.role == "branch":
+            try:
+                branch = Branch.objects.get(owner=self.request.user)
+                organization = branch.organization
+            except Branch.DoesNotExist:
+                context["error"] = "Branch not found"
+                return context
+            except Organization.DoesNotExist:
+                context["error"] = "Organization not found"
+                return context
+            access_accounts = set(branch.available_accounts.split(","))
+            all_accounts = self.fetch_member_ledger(organization, branch.member_number)
+            filtered_accounts = [
+                acc for acc in all_accounts if acc["AccNum"] in access_accounts
+            ]
+            accounts = filtered_accounts
 
         # all user created by the current user and whole role is staff
         all_staff = Staff.objects.filter(branch__owner=self.request.user)
         context["all_staff"] = all_staff
         context["total_balance"] = total_balance
+        context["accounts"] = accounts
 
         return context
 

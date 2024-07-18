@@ -31,91 +31,67 @@
 
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <div class="row">
-                        
-                        <div class="col-lg-8 mb-4 order-0">
-                            {% if accounts %}
-                                {% for account in accounts %}
-
-                                <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
-                                    <div class="card mb-4">
-
-                                        
-                                        <div class="d-flex align-items-center row">
-                                            <div class="col-sm-3 text-center">
-                                                <img src="{% static "assets/img/elements/account.png"%}"
-                                                    alt="User Avatar" class="img-fluid rounded-circle">
-                                            </div>
-                                            <div class="col-sm-9">
-                                                <div class="card-body">
-                                                    <h5 class="card-title text-primary">{{ account.GroupName}}</h5>
-                                                    <p class="mb-2">
-                                                        <span class="fw-medium">Account Number:</span> {{ account.AccNum }}
-                                                    </p>
-                                                    
-                                                    <p class="mb-2">
-                                                        <span class="fw-medium">Account Balance:</span>
-                                                        <span id="balance-{{ forloop.counter }}" class="balance">xxxxx.xx</span>
-                                                        <i class="bx bx-show cursor-pointer" onclick="showBalance('{{ forloop.counter }}', {{ account.PBal }})"></i>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </a>
-                                {% endfor %}
-                            {% else %}
-                                <div class="card mb-4 text-center">
-                                    <div class="card-body">
-                                        <img src="{% static 'assets/img/illustrations/girl-doing-yoga-light.png' %}" alt="No Accounts" class="img-fluid mb-4" style="max-width: 200px;">
-                                        <h5 class="card-title text-primary">No Accounts Available</h5>
-                                        <p class="mb-4">You haven't added any accounts yet. Please add an account to get started.</p>
-                                        <a href="#" class="btn btn-primary">Add Account</a>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- 
-                        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+                        <div class="col-lg-12 mb-4 order-0">
                             <div class="row">
-                                <div class="col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="  {% static "assets/img/icons/unicons/paypal.png" %}"
-                                                        alt="Credit Card" class="rounded" />
-                                                </div>
-                                            </div>
-                                            <span class="d-block mb-1">Payments</span>
-                                            <h3 class="card-title text-nowrap mb-2">10</h3>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-title d-flex align-items-start justify-content-between">
-                                                <div class="avatar flex-shrink-0">
-                                                    <img src="  {% static "assets/img/icons/unicons/cc-primary.png" %}"
-                                                        alt="Credit Card" class="rounded" />
-                                                </div>
-                                            
-                                            </div>
-                                            <span class="fw-medium d-block mb-1">Transactions</span>
-                                            <h3 class="card-title mb-2">$10</h3>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% if accounts %}
+                                    {% for account in accounts %}
+                                        <div class="col-md-6 col-sm-12">
+                                                <div class="card mb-4 relative">
+                                                    <div class=" align-items-center row">
+                                                        <div class="col-sm-3 text-center" >
+                                                            <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
 
-                                
+                                                            <img src="{% static "assets/img/elements/account.png" %}"
+                                                                alt="User Avatar" class="img-fluid rounded-circle">
+                                                            </a>
+
+                                                            </div>
+                                                        <div class=" col-sm-6" >
+
+                                                            <a onclick="fetchAccountDetails('{{ account.AccNum }}')">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title text-primary">{{ account.GroupName }}</h5>
+                                                                <p class="mb-2">
+                                                                    <span class="fw-medium">Account Number:</span> {{ account.AccNum }}
+                                                                </p>
+                                                                <p class="mb-2">
+                                                                    <span class="fw-medium">Account Balance:</span>
+                                                                    <span id="balance-{{ forloop.counter }}" class="balance">{{ account.PBal }}</span>
+                                                
+                                                                </p>
+                                                            </div>
+                                                        </a>
+
+                                                        </div>
+                                                        <div style="position:absolute; top:20px; right:20px; width:max-content">
+                                                            <a href="{% url 'report' %}?account={{ account.AccNum }}" class="menu-link avatar-initial rounded bg-label-primary p-2" >
+                                                                <i class=' bx bxs-report'></i>
+                                                                
+                                                            </a>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="col-12">
+                                        <div class="card mb-4 text-center">
+                                            <div class="card-body">
+                                                <img src="{% static 'assets/img/illustrations/girl-doing-yoga-light.png' %}" alt="No Accounts" class="img-fluid mb-4" style="max-width: 200px;">
+                                                <h5 class="card-title text-primary">No Accounts Available</h5>
+                                                <p class="mb-4">You haven't added any accounts yet. Please add an account to get started.</p>
+                                                <a href="#" class="btn btn-primary">Add Account</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
-
-                        -->
                     </div>
                 </div>
+            
                 <!-- / Content -->
 
                 <!-- Footer -->
