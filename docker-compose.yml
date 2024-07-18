@@ -1,0 +1,58 @@
+
+
+services:
+  db:
+    image: mysql
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+  web:
+    build: .
+    command: gunicorn your_project.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - db
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - static_volume:/app/staticfiles  # This should match the alias in Nginx configuration
+      - media_volume:/app/media
+    depends_on:
+      - web
+    networks:
+      - app-network
+
+networks:
+  app-network:  # Ensure this matches with the network names defined under services
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  static_volume:
+  media_volume:

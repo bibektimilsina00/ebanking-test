@@ -93,7 +93,7 @@ def member_ledger(request):
         try:
             response = requests.post(api_url, json=payload)
             response_data = response.json()
-
+            print(response_data)
             if response.status_code == 200 and response_data.get("isSuccess"):
                 return JsonResponse(response_data)
             else:

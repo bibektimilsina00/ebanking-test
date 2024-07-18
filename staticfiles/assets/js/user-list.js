@@ -134,10 +134,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function fetchMemberLedger(member) {
 
 
-
         handleFetchRequest('/accounts/member-ledger/', 'POST', { MembNum: member.MemberID })
             .then(data => {
+                print(data)
                 if (data.isSuccess) {
+
+                    console.log(data)
 
                     displayAccountList(JSON.parse(data.result));
                     fillFormWithMemberData(member);
