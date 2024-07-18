@@ -3,10 +3,7 @@ function getCsrfToken() {
     return document.querySelector('[name=csrfmiddlewaretoken]').value;
 }
 
-function showBaseModal(show) {
-    // Placeholder for showing or hiding a loading modal based on 'show' boolean
-    console.log(show ? "Show Loader" : "Hide Loader");
-}
+
 
 // Handle Fetch Requests with Error Handling
 function handleFetchRequest(url, method, body) {

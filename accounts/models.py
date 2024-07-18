@@ -6,7 +6,7 @@ from django_cryptography.fields import encrypt
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15, unique=True)
+    phone = models.CharField(max_length=15, blank=True)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     address = models.CharField(max_length=255, blank=True)

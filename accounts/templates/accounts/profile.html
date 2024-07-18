@@ -1,10 +1,8 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
 
 <body>
   <!-- Layout wrapper -->
-  <div class="layout-wrapper layout-content-navbar  ">
+  <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
       {% include "widgets/sidebar.html" %}
       <!-- Layout container -->
@@ -21,56 +19,141 @@
                   <h5 class="card-header">Profile Details</h5>
                   <!-- Account -->
                   <div class="card-body">
-                     <div class="d-flex align-items-start align-items-sm-center gap-4">
-    {% if user.avtar %}
-    <img src="{{ user.avtar.url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar">
-    {% else %}
-    <img src="{% static 'assets/img/avatars/user_placeholder.png' %}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar">
-    {% endif %}
-    <div class="button-wrapper">
-      <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
-        <span class="d-none d-sm-block">Upload new photo</span>
-        <i class="bx bx-upload d-block d-sm-none"></i>
-        <input type="file" id="upload" name="avtar" class="account-file-input" hidden="" accept="image/png, image/jpeg">
-      </label>
-      <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
-        <i class="bx bx-reset d-block d-sm-none"></i>
-        <span class="d-none d-sm-block">Reset</span>
-      </button>
-    </div>
-  </div>
+                    <div
+                      class="d-flex align-items-start align-items-sm-center gap-4"
+                    >
+                      {% if user.avtar %}
+                      <img
+                        src="{{ user.avtar.url }}"
+                        alt="user-avatar"
+                        class="d-block rounded"
+                        height="100"
+                        width="100"
+                        id="uploadedAvatar"
+                      />
+                      {% else %}
+                      <img
+                        src="{% static 'assets/img/avatars/user_placeholder.png' %}"
+                        alt="user-avatar"
+                        class="d-block rounded"
+                        height="100"
+                        width="100"
+                        id="uploadedAvatar"
+                      />
+                      {% endif %}
+                      <div class="button-wrapper">
+                        <label
+                          for="upload"
+                          class="btn btn-primary me-2 mb-4"
+                          tabindex="0"
+                        >
+                          <span class="d-none d-sm-block"
+                            >Upload new photo</span
+                          >
+                          <i class="bx bx-upload d-block d-sm-none"></i>
+                          <input
+                            type="file"
+                            id="upload"
+                            name="avtar"
+                            class="account-file-input"
+                            hidden=""
+                            accept="image/png, image/jpeg"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary account-image-reset mb-4"
+                        >
+                          <i class="bx bx-reset d-block d-sm-none"></i>
+                          <span class="d-none d-sm-block">Reset</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <hr class="my-0">
+                  <hr class="my-0" />
                   <div class="card-body">
-                    <form id="formAccountSettings" method="POST" enctype="multipart/form-data" onsubmit="return false">
+                    <form
+                      id="formAccountSettings"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      onsubmit="return false"
+                    >
                       <div class="row">
                         <div class="mb-3 col-md-6">
-                          <label for="firstName" class="form-label">First Name</label>
-                          <input class="form-control" type="text" id="firstName" name="firstName" value="{{ user.first_name }}" autofocus="">
+                          <label for="firstName" class="form-label"
+                            >First Name</label
+                          >
+                          <input
+                            class="form-control"
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            value="{{ user.first_name }}"
+                            autofocus=""
+                          />
                         </div>
                         <div class="mb-3 col-md-6">
-                          <label for="lastName" class="form-label">Last Name</label>
-                          <input class="form-control" type="text" name="lastName" id="lastName" value="{{ user.last_name }}">
+                          <label for="lastName" class="form-label"
+                            >Last Name</label
+                          >
+                          <input
+                            class="form-control"
+                            type="text"
+                            name="lastName"
+                            id="lastName"
+                            value="{{ user.last_name }}"
+                          />
                         </div>
                         <div class="mb-3 col-md-6">
                           <label for="email" class="form-label">E-mail</label>
-                          <input class="form-control" type="text" id="email" name="email" value="{{ user.email }}" placeholder="john.doe@example.com" readonly style="background-color: #e9ecef;">
+                          <input
+                            class="form-control"
+                            type="text"
+                            id="email"
+                            name="email"
+                            value="{{ user.email }}"
+                            placeholder="john.doe@example.com"
+                            readonly
+                            style="background-color: #e9ecef"
+                          />
                         </div>
                         <div class="mb-3 col-md-6">
-                          <label class="form-label" for="phoneNumber">Phone Number</label>
+                          <label class="form-label" for="phoneNumber"
+                            >Phone Number</label
+                          >
                           <div class="input-group input-group-merge">
                             <span class="input-group-text">NP (+977)</span>
-                            <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="9876543210" value="{{ user.phone }}">
+                            <input
+                              type="text"
+                              id="phoneNumber"
+                              name="phoneNumber"
+                              class="form-control"
+                              placeholder="9876543210"
+                              value="{{ user.phone }}"
+                            />
                           </div>
                         </div>
                         <div class="mb-3 col-md-6">
-                          <label for="address" class="form-label">Address</label>
-                          <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="{{ user.address }}">
+                          <label for="address" class="form-label"
+                            >Address</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="address"
+                            name="address"
+                            placeholder="Address"
+                            value="{{ user.address }}"
+                          />
                         </div>
                       </div>
                       <div class="mt-2">
-                        <button type="submit" class="btn btn-primary me-2">Save changes</button>
-                        <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary me-2">
+                          Save changes
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary">
+                          Cancel
+                        </button>
                       </div>
                     </form>
                   </div>
@@ -105,57 +188,55 @@
   <!-- Place this tag in your head or just before your close body tag. -->
   <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
 </body>
-{% endblock content %}
-
-{% block extra_js %}
+{% endblock content %} {% block extra_js %}
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('formAccountSettings');
-    const uploadInput = document.getElementById('upload');
-    const uploadedAvatar = document.getElementById('uploadedAvatar');
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("formAccountSettings");
+    const uploadInput = document.getElementById("upload");
+    const uploadedAvatar = document.getElementById("uploadedAvatar");
 
-    uploadInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadedAvatar.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
+    uploadInput.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          uploadedAvatar.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
     });
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const file = uploadInput.files[0];
-        if (file) {
-            formData.append('avtar', file);
-        }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const file = uploadInput.files[0];
+      if (file) {
+        formData.append("avtar", file);
+      }
 
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            },
+      showBaseModal(true);
+      fetch(this.action, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "success") {
+            alert(data.message);
+          } else {
+            throw new Error(data.message); // Propagate the error to the catch block
+          }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert(data.message);
-                showBaseModal(false); // Hide the loader modal on success
-            } else {
-                throw new Error(data.message); // Propagate the error to the catch block
-            }
+        .catch((error) => {
+          alert("Error updating profile: " + error.message);
         })
-        .catch(error => {
-            alert('Error updating profile: ' + error.message);
-            showBaseModal(false); // Hide the loader modal on error
+        .finally(() => {
+          showBaseModal(false); // Hide the loader modal on success or error
         });
     });
-});
-
-
+  });
 </script>
 {% endblock extra_js %}
